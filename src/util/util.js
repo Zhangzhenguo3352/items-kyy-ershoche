@@ -33,19 +33,7 @@ export function ajaxFn(fetch, url, data) {
           })
           resolve()
         } else {
-          fetch.fetch({
-            url,
-            data,
-            header: inItdata.header,
-            method: 'GET',
-            success: data => {
-              // let jsonData = JSON.parse(data)
-              resolve(data)
-            },
-            fail: (data, code) => {
-              reject(data, code)
-            }
-          })
+          fetchFn(resolve, reject)
         }
         
       },
@@ -61,6 +49,21 @@ export function ajaxFn(fetch, url, data) {
     })
     
   })
+  function fetchFn(resolve, reject) {
+    fetch.fetch({
+      url,
+      data,
+      header: inItdata.header,
+      method: 'GET',
+      success: data => {
+        // let jsonData = JSON.parse(data)
+        resolve(data)
+      },
+      fail: (data, code) => {
+        reject(data, code)
+      }
+    })
+  }
   return promise
 
   
@@ -319,7 +322,27 @@ export function idIsFn2(name, obj) {
   }
   return {timer, maxrOW}
 }
-
+export function idIsFn3(city, obj, province) {
+  let cityId, cityName;
+  for(var i = 0; i< obj.length; i++) {
+    if(city == obj[i].name) {
+      cityId = obj[i].id
+      cityName = obj[i].name
+    } else {
+      for(var j = 0; j < obj.length; j++) {
+        if(province == obj[j].name) {
+          cityId = obj[j].id
+          cityName = province
+        }
+      }
+    }
+  }
+  if(cityId == undefined) {
+    return {cityId: 0, cityName: '全国'} 
+  } else {
+    return {cityId, cityName}
+  }
+}
 
 export function utlSpliceFn(labeldata) {
   let str = ''
@@ -355,8 +378,34 @@ export function utlSpliceFn(labeldata) {
 }
 
 export function filterObject(currentData, allData) {
-  console.log('currentData---------',JSON.stringify(currentData))
-  console.log('allData---------', JSON.stringify(allData))
+}
+
+// 得到筛选 选中的数量
+export function selectedFn(arr) {
+  let num = 0;
+  let Boks = true
+  for(var i = 0; i < arr.length; i++) {
+      if(i === 0) {
+          for(var j = 0; j < arr[i].length; j++) {
+              // if(Boks) {
+                  if(arr[i][j] != -1) {
+                      
+                      if(i == 0 && j == 1) {
+
+                      } else {
+                        num++
+                      }
+                      // Boks = false
+                  }
+              // }
+          }
+      } else {
+          if(arr[i] != -1) {
+              num++
+          }
+      }
+  }
+  return num
 }
 
 export function createShortcut () {
@@ -372,10 +421,11 @@ export function createShortcut () {
             prompt.showToast({ message: '成功创建桌面图标' })
           },
           fail: function (errmsg, errcode) {
-            prompt.showToast({ message: 'error: ' + errcode + '---' + errmsg })
+            // prompt.showToast({ message: '用户拒绝创建图标' })
           }
         })
       }
     }
   })
 }
+

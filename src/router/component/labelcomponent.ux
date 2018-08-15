@@ -3,7 +3,7 @@
     <div class="{{labelShow ? '' : 'none'}}" style="">
         <div class="box" @click="labelClick">
             <text>{{title}}</text>
-            <image src="../../static/icon/1111.png" alt=""></image>
+            <image src="/Common/icon/1111.png" alt=""></image>
         </div>
     </div>
 </template>

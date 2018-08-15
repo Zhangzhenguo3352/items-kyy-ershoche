@@ -1,5 +1,5 @@
 
-<import name="header" src="../header"></import>
+<import name="header" src="../header/index"></import>
 <import name="textModel" src="../textModel"></import>
 <template>
     <stack>
@@ -17,7 +17,7 @@
             </div>
             <textModel textmodel="{{textmodel}}" if="{{showModel}}"></textModel>
             <stack style="height: 100%;padding-top:100px;width: 100%;">
-                <list id="list" style="flex-direction:column;columns: 1;" @scroll="scrollEvent" class="list">
+                <list id="list" style="flex-direction:column;" @scroll="scrollEvent" class="list">
                     <block for="item in list">
                         <list-item type="{{$idx}}" style="flex-direction:column;" ondisappear="showMask(item.letter, $idx, 'b')" onappear="hideMask(item.letter, $idx, 'b')">
                             <div show="{{cityType != 3}}">
@@ -28,19 +28,19 @@
                                         <!-- 当前城市 -->
                                         <div class="currentCityBox paddL" >
                                             <div @click="clickCurrentFn">
-                                                <image src="../../../static/icon/pos.png" alt="" class="img1"/>
+                                                <image src="/Common/icon/pos.png" alt="" class="img1"/>
                                                 <text class="text1">{{city.cityName}}</text>
                                             </div>
                                             <div @click="breakPos" >
-                                                <image src="../../../static/icon/pos-loading.png" alt="" class="img2 loading" show="{{rotate}}"></image>
-                                                <image src="../../../static/icon/pos-loading.png" alt="" class="img2" show="{{!rotate}}"></image>
+                                                <image src="/Common/icon/pos-loading.png" alt="" class="img2 loading" show="{{rotate}}"></image>
+                                                <image src="/Common/icon/pos-loading.png" alt="" class="img2" show="{{!rotate}}"></image>
                                                 <text class="text2">刷新定位</text>
                                             </div>
                                         </div>
                                         <!-- 区域 -->
                                         <text class="titleBOx paddL paddR" style="height: 102px;">区域</text>
                                         <!-- 大的区域 -->
-                                        <div class="big paddL">
+                                        <div class="big paddL bjfff">
                                             <text @click="allclick({cityId: 0, cityName: '全国' })">全国</text>
                                         </div>
                                         <!-- 直辖市 -->
@@ -81,7 +81,7 @@
         <!-- 抽屉组件 -->
         <div if="{{drawerShow}}">
             <stack>
-                <div class="demo-page-right opacity05Show" style="column:1; " @click="hideClick(false)"></div>
+                <div class="demo-page-right opacity05Show" @click="hideClick(false)"></div>
                 <list id="listDrawer" class="demo-page-right2 transform transformShow" @scroll="scrollEvent2">
                     <block for="item in cityList">
                         <list-item  type="{{$idx}}" >
@@ -104,7 +104,7 @@
     import { autoGovernment, citys } from '../../../util/areaData.js'
     import { provinces } from '../../../util/province.js'
     import { inItdata } from '../../../util/dataX.js'
-    import { ajaxFn,  getLocation, subscribe, storage_get, storage_set, storage_delete, storage_clear, rowListHeaderData, utlSpliceFn } from '../../../util/util.js'
+    import { ajaxFn,  getLocation, subscribe, storage_get, storage_set, storage_delete, storage_clear, rowListHeaderData, utlSpliceFn, idIsFn3 } from '../../../util/util.js'
 
     const slider = {
         data: {
@@ -131,6 +131,8 @@
             rotate: false, // 刷新图标 按钮 是否旋转
             valuationState: 0,
             valuationCityData: {},
+            bok: true,
+            carPriceModelshow: false
         },
         onInit() {
             this.setCurrentCity()
@@ -144,7 +146,12 @@
             }
         },
         onShow(){
+            $umeng_stat.resume(this) //在onShow方法的第一行加入此代码
             this.dispatch({ type: 'set', data: {citySelectTop: 1} })
+        },
+        onHide() {
+            $umeng_stat.pause(this);//在onHide方法的第一行加入此代码
+            //App业务代码
         },
         // 点击 抽屉里的 右侧城市
         clickRightCity(item) {
@@ -227,25 +234,52 @@
             var httpGetLocation = 'http://apiwx.taoche.com/api/Generic/GetLocation?'
             this.rotate = true // 开始旋转
             getLocation(geolocation, prompt, ( location ) => { // 用户同意 获取 经纬度
-                let url = `${httpGetLocation}longitude=${location.getLongitude}&latitude=${location.getLatitude}`
-                console.log('slider url', url)
-                ajaxFn(fetch, url, {}).then((cityData) => { 
+                 //  百度地图定位
+                let baiduUrl = `http://api.map.baidu.com/geocoder/v2/?callback=renderReverse&location=${location.getLatitude},${location.getLongitude}&output=json&pois=1&ak=mmuSzjRMnc9NAibnGigY3wHdY2SEf3n7`
+                console.log('baiduUrl', baiduUrl, this.state.getCityIdData.length)
+
+                if(this.state.getCityIdData.length != 0) {
+                    ajaxFn(fetch, baiduUrl, {}).then((cityData) => { 
+                        const renderReverse = (a) => a 
+                        let obj = eval(cityData.data).result.addressComponent;
+                        let name = obj.city;
+                        let province = obj.province
+                        let cityName = name.replace('市', '').replace('省', '')
+                        let provinceName = province.replace('市', '').replace('省', '')
+                        
+                        let json = idIsFn3(cityName, this.state.getCityIdData, provinceName)
+                        let key = {
+                            2: 201,
+                            26: 2601,
+                            24: 2401,
+                            31: 3101
+                        }
+                        if(key[json.cityId]) {
+                            json.cityId = key[json.cityId]
+                            this.city = json
+                        } else {
+                            this.city = json
+                        }
+                        this.rotate = false
+                        if(json.cityId == 0) {
+                            prompt.showToast({
+                                message: '未获取到当前城市 请手动选择',
+                                duration:0
+                            });
+                        }
+                    })
+                } else {
                     this.rotate = false
-                    let json = JSON.parse(cityData.data)
-                    if(json.code == 200) {
-                        this.city = json.data
-                    } else {
-                        prompt.showToast({
-                            message: '未获取到当前城市 请手动选择',
-                            duration:0
-                        });
-                        let v = {}
-                            v.cityName = '全国'
-                            v.cityId = '0'
-                            this.city = v
-                            this.setCookie(0)
-                    }
-                })
+                    prompt.showToast({
+                        message: '未获取到当前城市 请手动选择',
+                        duration:0
+                    });
+                    let v = {}
+                        v.cityName = '全国'
+                        v.cityId = '0'
+                        this.city = v
+                        this.setCookie(0)
+                }
             }, () => {
                 this.rotate = false
                 let v = {}
@@ -377,8 +411,14 @@
         hideClick() {
             this.drawerShow = false
         },
+        priceMOdelFn() {
+            this.dispatch({ type: 'set', data: {drawershow: false} })
+            this.dispatch({ type: 'set', data: {carPriceModelshow: false} })
+        },
         // 买车 列表数据
         buyCarListData2(currnetData) {
+            if(!this.bok) return
+            this.bok = false
             this.dispatch({ type: 'set', data: {isrefresh: true} })
             this.$broadcast('showBuyCarTop')
             this.$emit('showBuyCarTop')
@@ -390,6 +430,7 @@
             console.log('slider buyCarListData2 url', url)
             ajaxFn(fetch, url, {}).then((res) => { 
                 this.dispatch({ type: 'set', data: {isrefresh: false} })
+                this.priceMOdelFn()
                 if(res.code == '200') {
                     let jsonParse = JSON.parse(res.data)
                     if(jsonParse.status == '100') {
@@ -405,20 +446,26 @@
                        } else {
                             this.dispatch({ type: 'set', data: {isNOData: false} })
                        }
+                       // 使用 价格 model
+                        
                         router.back()
+                        this.bok = true
                     } else {
                         prompt.showToast({
                             message: jsonParse.msg,
                             duration: 0
                         }) 
+                        
                         router.back()
+                        this.bok = true
                     }
                 } else {
                     prompt.showToast({
-                        message: '网络异常',
+                        message: '网络繁忙',
                         duration: 0
                     })
                     router.back()
+                    this.bok = true
                 }
             })
         },
@@ -439,6 +486,10 @@
             component.labeldata = dataPatch.state.labeldata
             component.isrefresh = dataPatch.state.isrefresh
             component.citySelectTop = dataPatch.state.citySelectTop
+            component.getCityIdData = dataPatch.state.getCityIdData
+            component.drawershow = dataPatch.state.drawershow
+            component.carPriceModelshow = dataPatch.state.carPriceModelshow
+            
         }
     }
     export default connect( mapStateToData, fn )(slider)
@@ -474,15 +525,8 @@
         font-size: 30px;
         color: #001414;
     }
-    .demo-page-right {
-        
-    }
-    .demo-page-right2 {
-        
-    }
     .opacity05Show{
         animation-name: opacity05Show;
-        /* animation-delay:2s; */
         animation-duration: 1000ms;
         animation-fill-mode: forwards ; /*  去了不要回来 */
         animation-iteration-count: 1;
@@ -525,7 +569,6 @@
             background-color: #339933;
         }
     }
-    .transform {}
     .transformShow {
         animation-name: transformShow;
         animation-duration: 200ms;
@@ -552,18 +595,18 @@
 
     @keyframes transformShow {
         from {
-            transform: translate(540px 0);
+            transform: translateX(540px);
         }
         to {
-            transform: translate(0px 0px);
+            transform: translateX(0px);
         }
     }
     @keyframes transformHide {
         from {
-            transform: translate(0 0);
+            transform: translateX(0);
         }
         to {
-            transform: translate(840px 0px);
+            transform: translateX(840px);
         }
     }
     .borTop{
@@ -602,6 +645,7 @@
         height: 54px;   
         padding-left: 30px;
         justify-content: space-between;
+        background-color: #ffffff;
     }
     .currentCityBox .img1{
         width: 35px;
@@ -652,6 +696,7 @@
         align-items: center;
         flex-direction:column;;
     }
+    .bjfff{background-color: #ffffff;}
     .flexRight .divtext{
         height: 70px;
         flex-direction:column;;

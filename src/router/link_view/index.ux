@@ -1,17 +1,18 @@
 <import name="loading"  src="../../Template/loading"></import>
-<import name="header" src="../../router/component/header"></import>
+<import name="header" src="../../router/component/header/index"></import>
 <template>
     <div class="box-Main">
         <div class="slef">
             <header title="{{title}}" titleshow="{{titleshow}}" prop1="{{true}}" show="{{true}}">
                 <div class="div style0"    @click="openBtnPre">
-                    <image src="../../static/icon/back.png" alt="" />
+                    <image src="/Common/icon/back.png" alt="" />
                 </div>
             </header>
             <loading 
                 loading-text="正在加载..." 
                 loading-image="../../Template/loading.png" 
                 loading-show="{{isLoading}}" 
+                if="{{isLoading}}"
             ></loading>
             <web 
                 id="web" 
@@ -46,7 +47,6 @@
     .slef{
         flex-direction: column;
         height: 100%;
-        column: 1;
     }
     web{
         flex:1;
@@ -126,33 +126,40 @@
     import { inItdata } from '../../util/dataX.js'
     
     export default {
-       data: {
-           isLoading: false,
-           loadingShow: true,
-           backshow: false,
-           titleshow: true,
-           title: '',
-           xxx: [],
-           xxx2: '',
-           num: 0,
-       },
-       onReady() {},
-       onInit () {
+        data: {
+            isLoading: false,
+            loadingShow: true,
+            backshow: false,
+            titleshow: true,
+            title: '',
+            xxx: [],
+            xxx2: '',
+            num: 0,
+        },
+        onReady() {},
+        onInit () {
            this.xxx = []
            this.url = this.urlName
-       },
-       onShow(){},
-       pagestart(e){
-           this.url = e.url
-           this.isLoading = true;
-           let _this = this;
-           this.$element('web').canBack({
-               callback: function (e) {
-                   _this.$dispatch('webviewChange', { showTab: !e})
-                   _this.backshow = e
-               }
-           });
-       },
+           console.log('oninit  LIEK', this.urlName)
+        },
+        onShow(){
+            $umeng_stat.resume(this) //在onShow方法的第一行加入此代码
+        },
+        onHide() {
+            $umeng_stat.pause(this);//在onHide方法的第一行加入此代码
+            //App业务代码
+        },
+        pagestart(e){
+            this.url = e.url
+            this.isLoading = true;
+            let _this = this;
+            this.$element('web').canBack({
+                callback: function (e) {
+                    _this.$dispatch('webviewChange', { showTab: !e})
+                    _this.backshow = e
+                }
+            });
+        },
        
        pagefinish(e){
            this.isLoading = false;
@@ -232,5 +239,6 @@
                }
            });
        },
+       error() {}
    }
 </script>

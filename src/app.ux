@@ -5,6 +5,7 @@
   import util from './util'
   import { connectApp } from 'quickapp-redux'
   import { createStore } from 'redux'
+  import './umenganalysis.es.min';
   import stateData from './type.js'
   // Just a reducer example for creating store
   const store = createStore(function reducer (state = stateData.state, action){
@@ -36,6 +37,10 @@
   export default connectApp(store, {
     /**manifest**/
     showMenu: util.showMenu,
-    createShortcut: util.createShortcut
+    createShortcut: util.createShortcut,
+    onCreate(){
+      console.log("[app.ux] onCreate...");
+      $umeng_stat.init(this);   //在onCreate函数中加入该行代码，必须添加！！！
+    }
   })
 </script>

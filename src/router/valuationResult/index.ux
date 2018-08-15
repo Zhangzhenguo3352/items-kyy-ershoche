@@ -1,11 +1,11 @@
-<import name="header" src="../component/header"></import>
+<import name="header" src="../component/header/index"></import>
 <!-- 估价结果 -->
 <template>
     <!-- template里只能有一个根节点 -->
     <div class="me">
         <header title="估价结果页" menu="menu" titleshow="{{true}}" prop1="{{false}}" show="{{true}}">
             <div class="style0"  @click="backFn">
-                <image src="../../static/icon/back.png" alt="" />
+                <image src="/Common/icon/back.png" alt="" />
             </div>
         </header>
         <div class="resultBox">
@@ -19,7 +19,7 @@
                 </stack>
             </stack>
             <div class="infoBox">
-                <text lines="1" text-overflow="ellipsis" class="carType">{{data.SerialName}} {{data.ProductName}}</text>
+                <text class="carType" style="lines:1;text-overflow:ellipsis">{{data.SerialName}} {{data.ProductName}}</text>
             </div>
             <div class="infoBox carDate">
                 <text class="carDateL">{{data.LicenceDate}} 上牌 </text>
@@ -46,10 +46,12 @@
             router.back()
         },
         onShow() {
+            $umeng_stat.resume(this) //在onShow方法的第一行加入此代码
             this.data = JSON.parse(this.json)
         },
-        onInit() {
-            // console.log("init===========", this.json)
+        onHide() {
+            $umeng_stat.pause(this);//在onHide方法的第一行加入此代码
+            //App业务代码
         }
     }
 
@@ -102,7 +104,7 @@
         justify-content: center;
     }
     .leftBox text,.rightBox text{
-        color: #fff;
+        color: #ffffff;
         font-size: 26px;
     }
     .leftBox{
@@ -154,7 +156,7 @@
         width: 100%;
         height: 40px;
         text-align: center;
-        color: #fff;
+        color: #ffffff;
         font-size: 28px;
         margin-top:20px;
     }
@@ -162,7 +164,7 @@
         justify-content: center;
     }
     .infoBox text{
-        color: #fff;
+        color: #ffffff;
     }
     .carDate{
         height: 37px;
@@ -174,7 +176,7 @@
     }
     .carDateL{
         border-right-width: 1px;
-        border-right-color: #fff;
+        border-right-color: #ffffff;
         border-style: solid;
         margin-right: 10px;
         padding-right: 10px;

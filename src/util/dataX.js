@@ -5,8 +5,11 @@ export const inItdata =  {
   http: 'https://quickappapi.taoche.com/get',
   http3Car: 'https://quickappapi.taoche.com/get?entry=taocheapp',
   carData: 'https://quickappapi.taoche.com/phone/brand.json',
+
+  getCityUrl: 'https://quickappapi.taoche.com/phone/getcityid.json',
   v2: '7.1.0',
   v: '7.1.1',
+  v3: '7.2.0',
   header: {
     appuk: '',// 由设备激活（UV统计）接口返回
     devicetoken: '',//设备唯一标识符(为了防止和其他app重复，加quick后缀，如868403026561511quick)

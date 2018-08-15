@@ -1,8 +1,8 @@
-<import name="header" src="../../router/component/header"></import>
-<import name="home" src="../../router/page/home"></import>
-<import name="buyCar" src="../../router/page/buyCar"></import>
-<import name="sellingCar" src="../../router/page/sellingCar"></import>
-<import name="valuation" src="../../router/page/valuation"></import>
+<import name="header" src="../../router/component/header/index"></import>
+<import name="home" src="../../router/page/home/index"></import>
+<import name="buycar" src="../../router/page/buyCar/index"></import>
+<import name="sellingcar" src="../../router/page/sellingCar/index"></import>
+<import name="valuation" src="../../router/page/valuation/index"></import>
 <template>
     <div class="tutorial-page">
         <!-- 公用组件 -->
@@ -40,14 +40,14 @@
                     </home>
                 </div>
                 <div class="tab-content-section div-tabcontent-section"  show="{{currentIndex === 1}}">
-                    <buyCar location="{{location}}" city="{{city.cityName}}"
+                    <buycar location="{{location}}" city="{{city.cityName}}"
                         h="{{ h }}">
-                    </buyCar>
+                    </buycar>
                 </div>
                 <div class="tab-content-section div-tabcontent-section" show="{{currentIndex === 2}}">
-                    <sellingCar location="{{location}}" city="{{city.cityName}}"
+                    <sellingcar location="{{location}}" city="{{city.cityName}}"
                         h="{{ h }}">
-                    </sellingCar>
+                    </sellingcar>
                 </div>
                 <div class="tab-content-section div-tabcontent-section" show="{{currentIndex === 3}}">
                     <valuation location="{{location}}" city="{{city.cityName}}"
@@ -71,7 +71,7 @@
     import { inItdata } from '../../util/dataX.js'
     import { defaultCarData, headerArrModel } from '../../util/defaultCarData.js'
     import { CC2PY } from '../../util/pinyin.js'
-    import { ajaxFn, getLocation, subscribe, storage_get, storage_set, storage_delete, storage_clear, tabData, rowListHeaderData, utlSpliceFn } from '../../util/util.js'
+    import { ajaxFn, getLocation, subscribe, storage_get, storage_set, storage_delete, storage_clear, tabData, rowListHeaderData, utlSpliceFn, selectedFn } from '../../util/util.js'
     const foo = {
         data: {
             selectCityType: 'currentCity',
@@ -82,26 +82,30 @@
             citySelectTop: false,
             title: '',
             showRecommend: false,
+            drawershow: false,
+            carPriceModelshow: false,
+            fetchDeviceInfoData: {},
+            
             show: true,
             tabList: [{
                     name: '首页',
-                    normal: '/static/icon/icon1.png',
-                    selected: '/static/icon/icon1-current.png'
+                    normal: '/Common/icon/icon1.png',
+                    selected: '/Common/icon/icon1-current.png'
                 },
                 {
                     name: '买车',
-                    normal: '/static/icon/icon2.png',
-                    selected: '/static/icon/icon2-current.png'
+                    normal: '/Common/icon/icon2.png',
+                    selected: '/Common/icon/icon2-current.png'
                 },
                 {
                     name: '卖车',
-                    normal: '/static/icon/icon3.png',
-                    selected: '/static/icon/icon3-current.png'
+                    normal: '/Common/icon/icon3.png',
+                    selected: '/Common/icon/icon3-current.png'
                 },
                 {
                     name: '估价',
-                    normal: '/static/icon/icon4.png',
-                    selected: '/static/icon/icon4-current.png'
+                    normal: '/Common/icon/icon4.png',
+                    selected: '/Common/icon/icon4-current.png'
                 }
             ],
             tabSelectedIndex: 0,
@@ -120,7 +124,18 @@
             PageIndex: 1,
             isIndex1: true,
             listDataCarSource: [],
-            isNOData: false
+            isNOData: false,
+            getCityIdData: [],
+            subscriptNumber: 0,
+            goCarRouter: true,
+            priceModelType: true,
+            allCarsourceType: true,
+            valuationPageType: true,
+            sellingCarPageType: true,
+            goQueryList: false,
+            token: false,
+            initIndexShow: true
+
         },
         clickTabBar(index) {
             if(index == 2 || index == 3) {
@@ -137,8 +152,8 @@
             this.dispatch({ type: 'set', data: {title: tabData[index], currentIndex: index} })
         },
         fetchDeviceInfo (ret,device) { // 统计接口
-            var v = app.getInfo()
-            var url = `${inItdata.http}?v=${inItdata.v}&action=getmobiledeviceid&appType=3&appVersion=${v.versionName}&deviceToken=${device}&DeviceBrand=${ret.brand}&DeviceModel=${ret.model}&sysSN=${ret.osType}&sysVersion=${ret.osVersionName}`
+            let v = app.getInfo()
+            let url = `${inItdata.http}?v=${inItdata.v}&action=getmobiledeviceid&appType=3&appVersion=${v.versionName}&deviceToken=${device}&DeviceBrand=${ret.brand}&DeviceModel=${ret.model}&sysSN=${ret.osType}&sysVersion=${ret.osVersionName}`
             fetch.fetch({
                 url,
                 method: 'GET',
@@ -151,50 +166,193 @@
                         appid: 'app.quickapp',//app.quickapp
                         timestamp: Date.now()//1528276526458
                     }
+                    this.dispatch({ type: 'set', data: {fetchDeviceInfoData: inItdata.header} })
+                    // this.goQueryList = true
+                    // this.token = true
+                    // this.setStateFunction()
                 },
                 fail: (data, code) => {
                     console.log(data, code)
                 }
             })
         },
-        onCreate: function () {
-            var that = this;
-            //统计
-            device.getInfo({
-                success: function (ret) {
-                    device.getId({
-                        type: ['device'],
-                        success: function (data) {
-                            that.fetchDeviceInfo(ret,data.device+'quick')
-                            that.dispatch({ type: 'set', data: {phoneInfo: ret} })
-                        },
-                        fail: function (data,code) {
-                            if (code&&code=='201') {
-                                that.fetchDeviceInfo(ret,'')
+        onCreate: function () {},
+        createFn: function() {
+            
+                var that = this;
+                //统计
+                device.getInfo({
+                    success: function (ret) {
+                        device.getId({
+                            type: ['device'],
+                            success: function (data) {
+                                console.log('华为1')
+                                that.fetchDeviceInfo(ret,data.device+'quick')
+                                that.dispatch({ type: 'set', data: {phoneInfo: ret} })
+                            },
+                            fail: function (data,code) {
+                                console.log('华为2')
+                                if (code&&code=='201') {
+                                    that.goQueryList = true
+                                    that.token = false
+                                    that.fetchDeviceInfo(ret,'')
+                                    
+                                    
+                                }
                             }
-                        }
-                    })
+                        })
+                    }
+                })
+                
+            
+        },
+        onShow() {
+            $umeng_stat.resume(this) //在onShow方法的第一行加入此代码
+            network.subscribe({
+                callback:  (data) => {
+                    if(data.type == 'none') {} else {
+                        this.getCarDataFn()
+                        this.getCityIdDataFn()
+                    }
                 }
-            })
+            });
+            this.whatCity()
+            if(this.state.citySelectTop == 1) {
+                this.$broadcast('showBuyCarTop')
+                this.dispatch({ type: 'set', data: {citySelectTop: 0, drawershow: false, carPriceModelshow: false} })
+            } else if(this.state.citySelectTop == 2) {
+                this.buyCarListData2(this.state.currnetData)
+                this.$broadcast('showBuyCarTop')
+                this.dispatch({ type: 'set', data: {citySelectTop: 0} })
+            } 
+        },
+        onHide() {
+            $umeng_stat.pause(this);//在onHide方法的第一行加入此代码
+            //App业务代码
         },
         onInit() {
             this.setYear()
+            this.cardRouterType()
+            if(this.initIndexShow) {
+                this.createFn()
+                this.initIndexShow = false
+            }
+            
+            // this.setStateFunction()
             this.$on('onTabChange', this.onTabChange)
             this.$on('webviewChange', this.webviewChange)
             this.$on('goBuyCarPage', this.goBuyCarPage)
             this.$on('scrolltop', this.scrolltop)
+            
         },
+        // 使用 价格 model
+        priceMOdelFn() {
+            this.dispatch({ type: 'set', data: {drawershow: false} })
+            this.dispatch({ type: 'set', data: {carPriceModelshow: false} })
+            this.dispatch({ type: 'set', data: {carPriceModelshow: true} })
+        },
+        cardRouterType() {
+            this.dispatch({ type: 'set', data: {title: tabData[this.state.currentIndex]} })
+            if(this.card_id) {
+                if(this.card_id == 'brandpage') { // 品牌找车
+                    this.goCarRouter = false
+                    ajaxFn(fetch, 'https://quickappapi.taoche.com/phone/brand.json', {}).then((res) => { // 获取全国的 列表数据
+                        if(res.code == '200') {
+                            let jsonParse = JSON.parse(res.data)
+                            this.dispatch({ type: 'set', data: {listDatabrandpage:jsonParse} })
+                            router.push({
+                                uri: 'router/brandpage',
+                                params: {
+                                    key: '2'
+                                }
+                            })
+                        } else {
+                            prompt.showToast({
+                                message: '网络繁忙',
+                                duration: 0
+                            })
+                        }
+                    })
+                    this.dispatch({ type: 'set', data: {currentIndex: 1, title: tabData[1]} })
+                } else if(this.card_id == 'priceModel') { // 价格找车
+                    if(this.priceModelType) {
+                        this.priceModelType = false
+                        this.dispatch({ type: 'set', data: {currentIndex: 1, title: tabData[1]} })
+                        this.buyCarListData2(this.state.currnetData)
+                        this.priceMOdelFn()
+                    }
+                } else if(this.card_id == 'allCarsource') { // 全部车源
+                    if(this.allCarsourceType) {
+                        this.allCarsourceType = false
+                        this.dispatch({ type: 'set', data: {labeldata: []} })
+                        this.dispatch({ type: 'set', data: {currentIndex: 1, title: tabData[1]} })
+                        this.buyCarListData2(this.state.currnetData)
+                    }
+                } else if(this.card_id == 'valuationPage') { // 估价页
+                    if(this.valuationPageType) {
+                        this.valuationPageType = false
+                        this.dispatch({ type: 'set', data: {currentIndex: 3, title: tabData[3], drawershow: false, carPriceModelshow: false} })
+                        this.dispatch({ type: 'set', data: {show: false} })
+                    }
+                } else if(this.card_id == 'sellingCarPage') { // 卖车页
+                    if(this.sellingCarPageType) {
+                        this.sellingCarPageType = false
+                        this.dispatch({ type: 'set', data: {currentIndex: 2, title: tabData[2], drawershow: false, carPriceModelshow: false} })
+                        this.dispatch({ type: 'set', data: {show: false} })
+                    }
+                }
+            } else if(this.vivo_card_id) {
+                this.vivoCardFn()
+            }
+        },
+        // 根据vivo 卡片状态，跳转到某一个页面
+        vivoCardFn() {
+            if(this.vivo_card_id == 'allCarsource') { // 全部车源
+                if(this.allCarsourceType) {
+                    this.allCarsourceType = false
+                    this.dispatch({ type: 'set', data: {labeldata: []} })
+                    this.dispatch({ type: 'set', data: {currentIndex: 1, title: tabData[1]} })
+                    this.buyCarListData2(this.state.currnetData)
+                }
+            } else if(this.vivo_card_id == 'sellingCarPage'){ // 卖车页
+                if(this.sellingCarPageType) {
+                    this.sellingCarPageType = false
+                    this.dispatch({ type: 'set', data: {currentIndex: 2, title: tabData[2], drawershow: false, carPriceModelshow: false} })
+                    this.dispatch({ type: 'set', data: {show: false} })
+                }
+            } else if(this.vivo_card_id == 'valuationPage'){ // 估价页
+                if(this.valuationPageType) {
+                    this.valuationPageType = false
+                    this.dispatch({ type: 'set', data: {currentIndex: 3, title: tabData[3], drawershow: false, carPriceModelshow: false} })
+                    this.dispatch({ type: 'set', data: {show: false} })
+                }
+            }
+        },
+        //
         scrolltop() {
             this.$broadcast('showBuyCarTop')
         },
         getCarDataFn() {
-            ajaxFn(fetch, inItdata.carData, {}).then((res) => { // 获取全国的 列表数据
+            ajaxFn(fetch, 'https://quickappapi.taoche.com/phone/brand.json', {}).then((res) => { // 获取全国的 列表数据
                 if(res.code == '200') {
                     let jsonParse = JSON.parse(res.data)
                     this.dispatch({ type: 'set', data: {listDatabrandpage:jsonParse} })
                 } else {
                     prompt.showToast({
-                        message: '网络异常',
+                        message: '网络繁忙',
+                        duration: 0
+                    })
+                }
+            })
+        },
+        getCityIdDataFn() {
+            ajaxFn(fetch, inItdata.getCityUrl, {}).then((res) => { // 获取全国的 列表数据
+                if(res.code == '200') {
+                    let jsonParse = JSON.parse(res.data)
+                    this.dispatch({ type: 'set', data: {getCityIdData:jsonParse} })
+                } else {
+                    prompt.showToast({
+                        message: '网络繁忙',
                         duration: 0
                     })
                 }
@@ -214,24 +372,7 @@
             }
             this.clickTabBar(data.detail.index)
         },
-        onShow() {
-            network.subscribe({
-                callback:  (data) => {
-                    if(data.type == 'none') {} else {
-                        this.getCarDataFn()
-                    }
-                }
-            });
-            this.whatCity()
-            if(this.state.citySelectTop == 1) {
-                this.$broadcast('showBuyCarTop')
-                this.dispatch({ type: 'set', data: {citySelectTop: 0} })
-            } else if(this.state.citySelectTop == 2) {
-                this.buyCarListData2(this.state.currnetData)
-                this.$broadcast('showBuyCarTop')
-                this.dispatch({ type: 'set', data: {citySelectTop: 0} })
-            }
-        },
+        
         sortHeaderSet(D) {
             if(this.state.currentRowlistdata.id != 0) {
                 let data = Array.from(new Set(D.concat([1])))
@@ -287,6 +428,8 @@
                     }
                 }
             }
+            // 筛选角标 （添加）
+            this.dispatch({ type: 'set', data: {subscriptNumber: selectedFn(this.state.filterdata)} })
         },
         // 买车 列表数据
         buyCarListData1(currnetData) {
@@ -328,7 +471,7 @@
                     }
                 } else {
                     prompt.showToast({
-                        message: '网络异常',
+                        message: '网络繁忙',
                         duration: 0
                     })
                 }
@@ -369,7 +512,7 @@
                     }
                 } else {
                     prompt.showToast({
-                        message: '网络异常',
+                        message: '网络繁忙',
                         duration: 0
                     })
                 }
@@ -421,10 +564,8 @@
                             v.cityId = '0'
                             this.setCityFn(v)
                             this.setCookie(0)
-                            ajaxFn(fetch, httpGo, {}).then((cityData) => { // 获取全国的 列表数据
-                                let json = JSON.parse(cityData.data)
-                                this.setStateFunction(json)
-                            })
+                            this.goQueryList = true
+                            this.setStateFunction()
                             this.firstUse(httpGetLocation, httpDefault, httpGo)
                         }
                     })
@@ -463,12 +604,36 @@
         },
         // 设置 状态的地方
         setStateFunction(json) {
-            if(json.data.usedCarList.length == 0) {
-                this.dispatch({ type: 'set', data: {showRecommend: false} })
+            if(!this.goQueryList) return  
+            let url;
+            if(this.token) {
+                url = `${inItdata.http}?v=${inItdata.v3}&action=GetFavoriteCarList&cid=${this.currnetData.cityId}&psize=20&page=1&devicetoken=${this.state.fetchDeviceInfoData.devicetoken}`
             } else {
-                this.dispatch({ type: 'set', data: {showRecommend: true} })
+                url = `${inItdata.http}?v=${inItdata.v3}&action=GetFavoriteCarList&cid=${this.currnetData.cityId}&psize=20&page=1&devicetoken=868403026561511app`
+                
             }
-            this.dispatch({ type: 'set', data: {listDataCarSource: json.data.usedCarList} })
+            
+            console.log('currnetData  index.ux-----', url)
+            ajaxFn(fetch, url, {}).then((listData) => { // 将 carCityId， 拿到，存入到 storage 里面
+                
+                let json = JSON.parse(listData.data)
+                
+                let itemArr = json.data.Items.slice(0, 20)
+                if (json.status == '100') {
+                    if(itemArr.length == 0) {
+                        this.dispatch({ type: 'set', data: {showRecommend: false} })
+                    } else {
+                        this.dispatch({ type: 'set', data: {showRecommend: true} })
+                    }
+                    this.dispatch({ type: 'set', data: {listDataCarSource: itemArr} })
+                } else {
+                    prompt.showToast({
+                        message: json.msg,
+                        duration: 0
+                    })
+                }
+            })
+            
         },
         // 全国数据调用
         allData(httpGo) {
@@ -476,31 +641,25 @@
             v.cityName = '全国'
             v.cityId = '0'
             this.setCityFn(v)
-            ajaxFn(fetch, httpGo, {}).then((cityData) => { // 获取全国的 列表数据
-                let json = JSON.parse(cityData.data)
-                this.setStateFunction(json)
-                this.setCityStateFunction(v, 'currentCity')
-            })
+            
+            this.setCityStateFunction(v, 'currentCity')
+            this.goQueryList = true
+            this.setStateFunction()
         },
         // 第一次使用 过后 拿到cityId  是 0 时
         national(json_cityData, httpGo) {
-            ajaxFn(fetch, httpGo, {}).then((cityData) => { // 获取全国的 列表数据
-                let json = JSON.parse(cityData.data)
-                json.data.usedCarList.cityName = '全国'
-                this.setStateFunction(json)
-                this.setCityStateFunction(json_cityData, 'currentCity')
-            })
+
+            this.setCityStateFunction(json_cityData, 'currentCity')
+            this.goQueryList = true
+            this.setStateFunction()
         },
 
         // 第一次使用 过后 拿到cityId  不是 0 时
         noNational(json_cityData, json, httpDefault, httpGo) { // 不是全国
             if (json_cityData.cityName == json.data.cityName) { // 城市位置没有变
                 this.setCityStateFunction(json_cityData, 'currentCity')
-                let url = `${httpGo}cityId=${json.data.cityId}`
-                ajaxFn(fetch, url, {}).then((city) => {
-                    let jsonCityData = JSON.parse(city.data)
-                    this.setStateFunction(jsonCityData)
-                })
+                this.goQueryList = true
+                this.setStateFunction()
             } 
         },
         // 设置 选中数据
@@ -537,11 +696,9 @@
                         v.cityName = '全国'
                         v.cityId = '0'
                         this.setCityFn(v)
-                        ajaxFn(fetch, httpGo, {}).then((cityData) => { // 获取全国的 列表数据
-                            let json = JSON.parse(cityData.data)
-                            this.setStateFunction(json)
-                            this.setCityStateFunction(v, 'currentCity')
-                        })
+                        this.setCityStateFunction(v, 'currentCity')
+                        this.goQueryList = true
+                        this.setStateFunction()
                     }
                     console.log('lurl  url', this.getLongitude)
                 })
@@ -550,11 +707,9 @@
                 v.cityName = '全国'
                 v.cityId = '0'
                 this.setCityFn(v)
-                ajaxFn(fetch, httpGo, {}).then((cityData) => { // 获取全国的 列表数据
-                    let json = JSON.parse(cityData.data)
-                    this.setStateFunction(json)
-                    this.setCityStateFunction(v, 'currentCity')
-                })
+                this.setCityStateFunction(v, 'currentCity')
+                this.goQueryList = true
+                this.setStateFunction()
             })
         },
         // 地理位置
@@ -571,23 +726,18 @@
                     let json = JSON.parse(cityData.data)
                     if (json.data.cityId) { // 服务器定位成功
                         this.setCookie(json.data.cityId)
-                        let url = `${httpGo}cityId=${json.data.cityId}`
-                        ajaxFn(fetch, url, {}).then((city) => {
-                            let jsonCityData = JSON.parse(city.data)
-                            this.setCityStateFunction(json.data, 'currentCity')
-                            this.setStateFunction(jsonCityData)
-                        })
+                        this.setCityStateFunction(json.data, 'currentCity')
+                        this.goQueryList = true
+                        this.setStateFunction()
                     } else { // 定位失败
                         let v = {}
                         v.cityName = '全国'
                         v.cityId = '0'
                         this.setCityFn(v)
                         this.setCookie(0)
-                        ajaxFn(fetch, httpGo, {}).then((cityData) => { // 获取全国的 列表数据
-                            let json = JSON.parse(cityData.data)
-                            this.setStateFunction(json)
-                            this.setCityStateFunction(v, 'currentCity')
-                        })
+                        this.setCityStateFunction(v, 'currentCity')
+                        this.goQueryList = true
+                        this.setStateFunction()
                     }
                 })
             }, () => {
@@ -596,11 +746,9 @@
                 v.cityId = '0'
                 this.setCityFn(v)
                 this.setCookie(0)
-                ajaxFn(fetch, httpGo, {}).then((cityData) => { // 获取全国的 列表数据
-                    let json = JSON.parse(cityData.data)
-                    this.setStateFunction(json)
-                    this.setCityStateFunction(v, 'currentCity')
-                })
+                this.setCityStateFunction(v, 'currentCity')
+                this.goQueryList = true
+                this.setStateFunction()
             })
         },
 
@@ -609,30 +757,22 @@
             storage_get(storage, 'selectlocation', prompt, (selectData) => {
                 let jsonParseD = JSON.parse(selectData)
                 if (jsonParseD.cityId) {
-                    let url = `${httpGo}cityId=${jsonParseD.cityId}`
-                    ajaxFn(fetch, url, {}).then((city) => {
-                        let jsonCityData = JSON.parse(city.data)
-                        this.setSelectData(jsonParseD, 'selectCity')
-                        this.setStateFunction(jsonCityData)
-                    })
+                    this.setSelectData(jsonParseD, 'selectCity')
+                    this.goQueryList = true
+                    this.setStateFunction()
                 } else {
-                    ajaxFn(fetch, httpGo, {}).then((cityData) => { // 获取全国的 列表数据
-                        let data = JSON.parse(cityData.data)
-                        data.data.usedCarList.cityName = '全国'
-                        this.setSelectData(jsonParseD, 'selectCity')
-                        this.setStateFunction(data)
-                    })
+                    this.setSelectData(jsonParseD, 'selectCity')
+                    this.goQueryList = true
+                    this.setStateFunction()
                 }
             })
         },
         // 取消时， 那当前 数据 去哪到 列表
         setList(jsonParseD, httpGo) {
-            let url = `${httpGo}cityId=${jsonParseD.cityId}`
-            ajaxFn(fetch, url, {}).then((cityData) => { // 获取全国的 列表数据
-                let json = JSON.parse(cityData.data)
-                this.setStateFunction(json)
-                this.setCityStateFunction(jsonParseD, 'currentCity')
-            })
+            
+            this.setCityStateFunction(jsonParseD, 'currentCity')
+            this.goQueryList = true
+            this.setStateFunction()
         },
         // 设置定位的城市
         setCityFn(cityData) {
@@ -645,24 +785,6 @@
         selectCityFn(cityData) {
             this.locationstate = cityData
             storage_set(storage, 'locationstate', cityData, prompt, () => {}) // 存储达到 storage 里面
-        },
-        // 点击tabr 的方法
-        tabItemClick(index) {
-            let text = ''
-            let a = Math.random()
-            if (CC2PY(this.h).toLowerCase() == 'zhongqing') {
-                text = 'chongqing'
-            } else {
-                text = CC2PY(this.h).toLowerCase()
-            }
-            if (index == 1) {
-                this.webviewurl = `http://${text}.m.taoche.com/kuaiyingyong/all/`
-            } else if (index == 2) {
-                this.webviewurl = `http://cooper.m.taoche.com/cooper/sellcar/`
-            } else if (index == 3) {
-                this.webviewurl = `http://cooper.m.taoche.com/pinggu/`
-            }
-            this.tabSelectedIndex = index;
         },
         tabsChange(e) {
             this.tabSelectedIndex = e.index;
@@ -693,6 +815,11 @@
             component.phoneInfo = dataPatch.state.phoneInfo
             component.isNOData = dataPatch.state.isNOData
             component.showRecommend = dataPatch.state.showRecommend
+            component.getCityIdData = dataPatch.state.getCityIdData
+            component.subscriptNumber = dataPatch.state.subscriptNumber
+            component.drawershow = dataPatch.state.drawershow
+            component.carPriceModelshow = dataPatch.state.carPriceModelshow
+            component.fetchDeviceInfoData = dataPatch.state.fetchDeviceInfoData
             
         }
     }

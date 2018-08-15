@@ -1,0 +1,178 @@
+<template>
+    <div class="card_box" onclick="openApp">
+        <div class="card_box width704 height288">
+            <div class="title_box">
+                <div class="title_logo_box">
+                    <image src="https://quickappapi.taoche.com/phone/static/min-taoche.png" class="title_logo"/>
+                </div>
+                <text class="title_text">淘车二手车</text>
+            </div>
+            <div class="content_box">
+                <div class="content_text">
+                    <text class="content_text_1" style="padding-left: 0px;">车辆估价</text>
+                    <text class="content_text_2" style="padding-left: 0px;">买车前先估个价吧，心中有谱才能待价而沽哦！</text>
+                </div>
+
+                <div class="content_image_box">
+                    <image src="https://quickappapi.taoche.com/phone/static/card01.png" class="content_image" />
+                </div>
+            </div>
+            <div class="menu_box">
+                <text class="menu_item menu_item_left" onclick="valuationPageFn">立即估价</text>
+                <text class="menu_item menu_item_right" onclick="sellingCarPageFn">快速卖车</text>
+            </div>
+        </div>
+    </div>
+</template>
+
+<style>
+    .card_box {
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+    }
+    .width704{
+        width: 704px;
+        /* background-color: #00ffff; */
+        border-radius: 24px
+    }
+    .height288{height:288px;}
+
+    .title_box {
+        /* background-color: transparent; */
+        border-top-left-radius: 24px;
+        border-top-right-radius: 24px;
+        width: 704px;
+    }
+    .title_logo_box{
+        width: 32px;
+        /* height: 32px; */
+        margin-left: 23px;
+        /* margin-top: 16px; */
+        /* background-image: url(/Common/icon/min-taoche.png); */
+    }
+    .title_logo {
+        resize-mode: contain;
+        /* background-image: url(/Common/icon/min-taoche.png); */
+        width: 100%;
+        height: 100%;
+       
+    }
+
+    .title_text {
+        flex-direction: column;
+        font-size: 24px;
+        color: #1A1A1A;
+        margin-left: 16px;
+        /* margin-top: 14px; */
+    }
+
+    .content_box {
+        background-color: transparent;
+        flex-direction: row;
+    }
+
+    .content_text {
+        flex-direction: column;
+        background-color: transparent;
+        width: 75%;
+        
+    }
+
+    .content_image_box {
+        flex-direction: column;
+        border-radius: 12px;
+        width: 130px;
+        flex: 1;
+    }
+
+    .content_image {
+        width: 100%;
+        margin-right: 24px;
+        margin-top: 20px;
+        opacity: 1;
+    }
+
+    .content_text_1 {
+        font-size: 30px;
+        color: #000000;
+        opacity: 0.7;
+        margin-top: 18px;
+        height: 40px;
+    }
+
+    .content_text_2 {
+        font-size: 26px;
+        color: #666666;
+        opacity: 0.5;
+        line-height: 32px;
+        height: 80px;
+        margin-top: 8px;
+    }
+
+    .menu_box {
+        width: 100%;
+        opacity: 100;
+        background-color: transparent;
+        margin-left: 24px;
+        margin-top: 10px;
+    }
+
+    .menu_item {
+        height: 48px;
+        width: 128px;
+        border-radius: 8px;
+        line-height: 48px;
+    }
+
+    .menu_item_left {
+        font-size: 24px;
+        color: #005BBA;
+        text-align: center;
+    }
+
+    .menu_item_right {
+        font-size: 24px;
+        color: #005BBA;
+        text-align: center;
+        /* background-color: rgba(0,0,0,.1); */
+        margin-left: 10px;
+    }
+</style>
+
+<script>
+    import router from '@system.router'
+    module.exports = {
+        props: ['title'],
+        data: {
+            title: 'Word'
+        },
+        openApp: function () {
+
+        },
+        onInit() {
+            var date = new Date();
+            date.setDate(date.getDate() + 1);
+            var month = date.getMonth() + 1;
+            var day = date.getDate();
+            var time = month + "月" + day + "日 9:00 普通外科 预约";
+            this.title = time;
+        },
+        valuationPageFn: function () {
+            router.push({
+                uri: 'router/page',
+                    params: {
+                    card_id: 'valuationPage'
+                }
+            })
+        },
+        sellingCarPageFn: function () {
+            router.push({
+                uri: 'router/page',
+                    params: {
+                    card_id: 'sellingCarPage'
+                }
+            })
+        }
+    }
+</script>

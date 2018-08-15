@@ -1,0 +1,110 @@
+<!-- @scrollbottom="listScrollBottom" -->
+<template>
+    <div class="demo-page">
+        <list id="list1" style="flex-direction:column;columns: 1"  scrollpage="{{true}}">
+            <block for="(index,item) in listDataCarSource" >
+                <list-item type="{{index}}" >
+                    <div class="borderBottom" @click="goLinkRouter(item, '车源详情')">
+                        <div style="width: 255px;height: 170px;flex-direction:column">
+                            <stack style="width: 255px;height: 170px;" >
+                                <image
+                                    style="width: 255px;height: 170px;"
+                                    src="{{item.ImageURL}}"
+                                    class="imgList"
+                                >
+                                </image>
+                                <div
+                                    show="{{item.IsTaocheAuthCar == 0 ? false : true}}"
+                                    style="width: 100px;height: 40px;background-color: #FF6402;justify-content: center;">
+                                    <text style="font-size: 20px;color: #FFFFFF;">淘车认证</text>
+                                </div> 
+                                <div
+                                    show="{{item.IsOffSiteCPC == 1}}"
+                                    style="width: 60px;height: 40px;background-color: rgba(51, 51, 51, .8);justify-content: center;margin-left: 180px;margin-top: 15px; ">
+                                    <text style="font-size: 20px;color: #FFFFFF;">推广</text>
+                                </div>
+                            </stack>
+                        </div>
+                        <div style="flex-direction: column;margin-left: 30px;" >
+                            <div  style="width: 405px;margin-top:-8px;height: 84px;align-items: flex-start;justify-content:flex-start;flex-direction: column;">
+                                <text style="font-size: 32px;color: #2F3540;padding-right:15px;padding-top:1px;text-overflow:ellipsis;lines:2">{{item.BrandName}} {{item.CarName}}</text>
+                            </div>
+                            <div style="flex-direction: row;margin-top: 6px;margin-bottom: 10px">
+                                <text style="font-size: 26px;color: #818D9A;line-height: 40px;">{{item.BuyCarDate_New}}</text>
+                                <text style="font-size: 26px;color: #818D9A;line-height: 40px;padding-left: 14px;padding-right: 14px;margin-top: -4px;">|</text>
+                                <text style="font-size: 26px;line-height: 40px;color: #818D9A;">{{item.DrivingMileageText}}</text>
+                                <!-- <text style="font-size: 26px;color: #818D9A;line-height: 40px;padding-left: 14px;padding-right: 14px;margin-top: -4px;" show="{{( currnetData.cityId == 0 ) ? true : false}}">|</text> -->
+                                <!-- <text style="font-size: 26px;line-height: 40px;color: #818D9A;"  show="{{(currnetData.cityId == 0 )? true : false}}">{{item.CityName}}</text> -->
+
+                                <text style="font-size: 26px;color: #818D9A;line-height: 40px;padding-left: 14px;padding-right: 14px;margin-top: -4px;" show="{{ item.IsEnvironsCar == 1 || currnetData.cityId == 0 || item.IsOffSiteCPC == 1}}">|</text>
+                                    <text style="font-size: 26px;line-height: 40px;color: #818D9A;" show="{{  item.IsEnvironsCar == 1 || currnetData.cityId == 0 || item.IsOffSiteCPC == 1}}">{{item.CityName}}</text>
+                            </div>
+                            <div style="flex-direction: row;align-items: center;margin-bottom: 10px ">
+                                <text style="color: #FF6402;font-size: 32px;font-weight: bold;">{{item.DisPlayPrice}}万</text>
+                            </div>
+                        </div>
+                    </div>
+                </list-item>
+            </block>
+        </list>
+    </div>
+</template>
+<style>
+    .demo-page {
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+    }
+    .borderBottom{
+        border-bottom-width: 1px;
+        border-bottom-color: #f0f0f0;
+        flex-direction: row;
+        padding-top:36px;
+        padding-bottom:20px;
+    }
+    .paddingleft10{padding-left: 10px}
+    .paddingright10{padding-right: 10px}
+    .paddingtop5{padding-top: 5px}
+    .paddingbottom5{padding-bottom: 5px}
+</style>
+
+<script>
+    import router from '@system.router';
+    import fetch from '@system.fetch'
+    import prompt from '@system.prompt'
+    import { connect } from 'quickapp-redux'
+    import { inItdata } from '../../../util/dataX.js'
+    import { ajaxFn,  getLocation, subscribe, storage_get, storage_set, storage_delete, storage_clear } from '../../../util/util.js'
+const loadmore = {
+    data: {
+            listDataCarSource: [],
+            currnetData: {}
+        },
+        onInit() {},
+        onShow() {},
+        // 去 webView 页面
+        goLinkRouter(urlName, titleName) {
+            router.push({
+                uri: 'router/link_view',
+                params: {
+                    urlName: `http://cooper.m.taoche.com/kuaiyingyong/buycar/carinfo2017.aspx?ucarid=${urlName.UcarID}&manufacturer=${this.state.phoneInfo.brand}`,
+                    titleName
+                }
+            })
+        },
+    }
+    function mapStateToData(state) {
+    return {
+        state
+    }
+}
+const fn = {
+    componentWillReceiveDataPatch: (component, dataPatch, state) => {
+        component.currnetData = dataPatch.state.currnetData
+        component.phoneInfo = dataPatch.state.phoneInfo
+        component.listDataCarSource = dataPatch.state.listDataCarSource
+    }
+}
+export default connect( mapStateToData, fn )(loadmore)
+</script>
+    

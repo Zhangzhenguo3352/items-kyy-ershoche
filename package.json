@@ -31,6 +31,8 @@
     "webpack": "^3.11.0"
   },
   "dependencies": {
+    "js-base64": "^2.4.8",
+    "md5": "^2.2.1",
     "quickapp-redux": "^0.1.5",
     "redux": "^4.0.0"
   }

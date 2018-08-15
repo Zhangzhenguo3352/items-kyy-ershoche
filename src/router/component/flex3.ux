@@ -117,11 +117,11 @@
     }
     @keyframes opacity05Show {
         from {
-            transform: translate(0, -40px);
+            transform: translateY(-40px);
             opacity: 0.2;
         }
         to {
-            transform: translate(0, 0px);
+            transform: translateY(0px);
             opacity: 1;
         }
     }

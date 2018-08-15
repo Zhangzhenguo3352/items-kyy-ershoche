@@ -1,12 +1,12 @@
 <!-- 车型控件 -->
-<import name="header" src="../component/header"></import>
-<import name="textModel" src="../component/textModel"></import>
+<import name="header" src="../component/header/index"></import>
+<import name="textmodel" src="../component/textModel"></import>
 <template>
     <stack>
         <div class="box-Main demo-page" style="flex-direction: column;">
             <header title="{{title}}" titleshow="{{true}}" prop1="{{false}}" show="{{true}}">
                 <div class="div style0"   @click="backFn" style="width: 190px;">
-                    <image src="../../static/icon/back.png" alt="" />
+                    <image src="/Common/icon/back.png" alt="" />
                 </div>
             </header>
             <div class="flexRight">
@@ -15,12 +15,12 @@
                     class="divtext"
                     @longpress="letterclick($item, $idx)"
                 >
-                    <text type="{{$idx}}">{{$item}}</text>
+                    <text >{{$item}}</text>
                 </div>
             </div>
-            <textModel textmodel="{{textmodel}}" if="{{showModel}}"></textModel>
+            <textmodel textmodel="{{textmodel}}" if="{{showModel}}"></textmodel>
             <stack style="height: 100%;padding-top:100px;width: 100%;">
-                <list id="list" style="flex-direction:column;columns: 1;" @scroll="scrollEvent" class="list">
+                <list id="list" style="flex-direction:column;" @scroll="scrollEvent" class="list">
                     <block for="item in listDatabrandpage">
                         <list-item type="{{$idx}}" style="flex-direction:column;" ondisappear="showMask(item.FirstChar, $idx, 'b')" onappear="hideMask(item.FirstChar, $idx, 'b')">
                             <!-- #  部分 -->
@@ -33,28 +33,29 @@
                                     <text class="titleBOx paddL paddR" style="height: 102px;">热门品牌</text>
                                     <!-- 具体 直辖市 -->
                                     <div class="big paddL warp">
-                                        <div @click="selectCity2('data', item.params, item)" style="flex-direction:column;width: 25%;height: 120px;" class="center" for="(i, item) in defaultCarData">
-                                            <image class="tab-icon" src="{{item.url}}" resize-mode="contain"></image>
+                                        <div @click="selectCity2('data', item.params, item)" style="flex-direction:column;width: 25%;height: 120px;background-color: #ffffff;" class="center" for="(i, item) in defaultCarData">
+                                            <image class="tab-icon" src="{{item.url}}"  style="resize-mode:contain"></image>
                                             <text >{{item.name}}</text>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                             <!-- 下面的部分 -->
-                            <div style="flex-direction:column;" class="">
+                            <div style="flex-direction:column;" >
                                 <text class="paddL paddR bj1Color" show="{{item.FirstChar == '#' ? false : true}}">{{item.FirstChar}}</text>
-                                <div for="(i, k) in item.UcarMakeItemList" class="setImage">
-                                    <image class="tab-icon" src="{{k.Image}}" resize-mode="contain"></image>
+                                <stack for="(i, k) in item.UcarMakeItemList" class="setImage">
+                                    
                                     <div style="flex-direction:column;">
                                         <text 
                                             class="titleBOx paddL paddR borTop" 
-                                            style="height: 102px; border-top-color: {{0 == i ? '#ffffff' : '#eeeeee'}}" 
+                                            style="height: 102px; padding-left: 130px;border-top-color: {{0 == i ? '#ffffff' : '#eeeeee'}}; color: {{ (stringLabeldata[k.Name] && keyType !=3 && showCarType !=1) ? '#e73d12' : '#2F3540'}}" 
                                             @click="selectCity(item.children, k.ID, k)"
                                         >
                                             {{k.Name}}
                                         </text>
                                     </div>
-                                </div>
+                                    <image class="tab-icon" src="{{k.Image}}"  style="resize-mode:contain"></image>
+                                </stack>
                             </div>
                         </list-item>
                     </block>
@@ -70,35 +71,42 @@
         <!-- 抽屉组件 -->
         <div if="{{drawerShow == 2}}">
             <stack>
-                <div class="demo-page-right opacity05Show" style="column:1; " @click="hideClick(false)"></div>
-                <div class="demo-page-right maskBox opacity05Show2" style="column:1; width: 750px;align-items: flex-start " @click="hideClick(false)">
+                <div class="demo-page-right opacity05Show"  @click="hideClick(false)"></div>
+                <div class="demo-page-right maskBox opacity05Show2" style=" width: 750px;align-items: flex-start " @click="hideClick(false)">
                         <div style="flex-direction:column;justify-content: center;align-items:center;margin-left: 80px;">
-                            <image src="../../static/icon/carBack.png" alt="" />
+                            <image src="/Common/icon/carBack.png" alt="" />
                             <text >点</text>
                             <text >击</text>
                             <text>收</text>
                             <text >起</text>    
                         </div>
                     </div>
-                <list id="listDrawer" class="demo-page-right2 transform {{drawerShow ? 'transformShow' : 'transformHide'}}" @scroll="scrollEvent2">
+                <list class="demo-page-right2 transform {{drawerShow ? 'transformShow' : 'transformHide'}}" @scroll="scrollEvent2">
                     <block >
                         <list-item  type="loadMore05">
                             <div class="list_box" >
-                                <image class="tab-icon" src="{{modelData.Image}}"  resize-mode="contain"></image>
+                                <image class="tab-icon" src="{{modelData.Image}}"  style="resize-mode:contain"></image>
                                 <text style="margin-left: 30px;">{{modelData.Name}}</text>
                             </div>
                         </list-item>
                         <list-item if="{{key == 2}}" type="loadMore06" >
                             <div class="list_box" @click="anyCar(2)">
-                                <text>不限车型</text>
+                                <text style="color: {{(stringLabeldata2.indexOf('品牌') && stringLabeldata2.indexOf('品牌') != -1 && stringLabeldata2.indexOf('品牌2') == -1 && stringLabeldata[modelData.Name] && keyType !=3 && showCarType !=1? '#e73d12' : '#2F3540')}}">不限车型</text>
+                                <!-- <text >不限车型</text> -->
                             </div>
                         </list-item>
 
                         <list-item  type="{{i}}" for="(i, data) in modelData.UcarModelList" style="flex-direction:column;">
-                            <div class="list_box" text-overflow="ellipsis" style="height: 56px;background-color: #F8F8F8;">
-                                <text style="font-weight:bold;font-size: 32px;">{{data.Name}}</text>
+                            <div class="list_box" style="height: 56px;background-color: #F8F8F8;">
+                                <text style="font-weight:bold;font-size: 32px;text-overflow:ellipsis">{{data.Name}}</text>
                             </div>        
-                            <div class="list_box" @click="clickRightCity(data, D)" for="(j, D) in data.UcarModelItemList" type="{{j}}"><text>{{D.Name}}</text></div>
+                            <div class="list_box" @click="clickRightCity(data, D)" for="(j, D) in data.UcarModelItemList" ><text style="color: {{(stringLabeldata[D.Name] && keyType !=3) ? '#e73d12' : '#2F3540'}}">{{D.Name}}</text></div>
+                            <!-- <div class="list_box" @click="clickRightCity(data, D)" for="(j, D) in data.UcarModelItemList" >
+                                <text style="color: #e73d12">
+                                    {{D.Name}}
+                                </text>
+                            </div> -->
+
                         </list-item>
                     </block>
                 </list>
@@ -106,13 +114,13 @@
         </div>
         <div elif="{{drawerShow == 3}}">
             <stack>
-                <div class="demo-page-right opacity05Show" style="column:1; " @click="hideClick(false)"></div>
-                <list id="listDrawer" class="demo-page-right2 transform transformShow750" @scroll="scrollEvent2">
+                <div class="demo-page-right opacity05Show"  @click="hideClick(false)"></div>
+                <list class="demo-page-right2 transform transformShow750" @scroll="scrollEvent2">
                 
                     <block >
                         <list-item  type="loadMore01">
                             <div class="list_box" >
-                                <image class="tab-icon" src="{{modelData.Image}}"  resize-mode="contain"></image>
+                                <image class="tab-icon" src="{{modelData.Image}}"  style="resize-mode:contain"></image>
                                 <text style="margin-left: 30px;">{{modelData.Name}}</text>
                             </div>
                         </list-item>
@@ -122,10 +130,10 @@
                             </div>
                         </list-item>
                         <list-item  type="{{i}}" for="(i, data) in carModel3Arr" style="flex-direction:column;"  if="{{!more}}">
-                            <div class="list_box" text-overflow="ellipsis" style="height: 56px;background-color: #F8F8F8;">
-                                <text style="font-weight:bold;font-size: 32px;">{{data.Name}}</text>
+                            <div class="list_box"  style="height: 56px;background-color: #F8F8F8;">
+                                <text style="font-weight:bold;font-size: 32px;text-overflow:ellipsis">{{data.Name}}</text>
                             </div>        
-                            <div class="list_box" @click="clickRightCity750(data, D)" for="(j, D) in data.CarInfoList" type="{{j}}"><text>{{D.CarName}}</text></div>
+                            <div class="list_box" @click="clickRightCity750(data, D)" for="(j, D) in data.CarInfoList" ><text>{{D.CarName}}</text></div>
                         </list-item>
                         <list-item show="{{more}}" type="loadMore04">
                             <div class="list_boxprogress" >
@@ -174,6 +182,9 @@
             initBok: false,
             titleShow: false,
             titleShow2: true,
+            labeldata: [],
+            stringLabeldata: {},
+            stringLabeldata2: '',
             b : true,
             timer: null,
             cityList: [],
@@ -199,10 +210,40 @@
             carModel3Arr: [],
             more: true
         },
-        onInit() {},
+        onInit() {
+            this.keyType = this.key
+            this.showCarType = this.showCar
+            console.log('this.showCar', this.showCar)
+            if(this.buycar == 2 && JSON.parse(this.params)[0] ) {
+                let carInfo = JSON.parse(this.params)[0]
+                carInfo.name = carInfo.data.selectName
+                this.selectCity2('data', carInfo.params, carInfo)    
+            } 
+        },
+        onShow(){
+            $umeng_stat.resume(this) //在onShow方法的第一行加入此代码
+            //App业务代码
+        },
+        onHide() {
+            $umeng_stat.pause(this);//在onHide方法的第一行加入此代码
+            //App业务代码
+        },
         anyCar(modelType) {
             if(this.key == 2) {
                 this.dispatch({ type: 'set', data: { currentIndex: 1} })
+                let labeldataArr = this.state.labeldata.filter(item => 
+                        item.title !== '品牌' &&
+                        item.title !== '品牌2' )
+                    const json1 = {}
+                    json1.id = this.home1.ID
+                    json1.data = {
+                        selectName: this.home1.Name
+                    }
+                    json1.title = this.home1.title
+                    json1.type = this.home1.type
+                    json1.params = this.home1.ID  
+                    labeldataArr.push(json1)
+                    this.dispatch({ type: 'set', data: {labeldata: labeldataArr} })
             } else if(this.key == 3) {
                 if(modelType == 2) {
                     this.state.carModelData.name1 = this.name1
@@ -238,6 +279,7 @@
         },
         // 点击返回
         backFn(e) {
+            this.dispatch({ type: 'set', data: {citySelectTop: 2} })
             if(!this.backType()) router.back()
         },
         // 物理返回键
@@ -254,9 +296,9 @@
             }
             return timer;
         },
-        setLableFn(title, ID, selectName, type) {
-            if(this.idIsFn(title) != undefined) {
-                const json2 = {}
+        setLableFn(title, ID, selectName, type, k) {
+            console.log('id========', k , this.idIsFn(title) != undefined)
+            const json2 = {}
                 json2.id = ID
                 json2.data = {
                     selectName
@@ -264,25 +306,29 @@
                 json2.title = title
                 json2.type = type
                 json2.params = ID
+
+
+                const json1 = {}
+                json1.id = this.home1.ID
+                json1.data = {
+                    selectName: this.home1.Name
+                }
+                json1.title = this.home1.title
+                json1.type = this.home1.type
+                json1.params = this.home1.ID
+                
                 let labeldataArr = this.state.labeldata.filter(item => 
-                                    item.title !== '品牌' && 
-                                    item.title !== '品牌2' )
-                let data1 =  [json2].concat(labeldataArr)
-                this.dispatch({ type: 'set', data: {labeldata: data1} })
-            } else {
-                const json2 = {}
-                json2.id = ID
-                json2.data = {
-                    selectName
-                }
-                json2.type = type
-                json2.params = ID
-                json2.title = title
-                this.state.labeldata.push(json2)
-                this.dispatch({ type: 'set', data: {labeldata: this.state.labeldata} })
-            }
+                                item.title !== '品牌' &&
+                                item.title !== '品牌2' )
+                // let data1 =  [json1,json2].concat(labeldataArr)
+                labeldataArr.push(json1)
+                labeldataArr.push(json2)
+                console.log('JSON.=----', JSON.stringify(labeldataArr))
+                this.dispatch({ type: 'set', data: {labeldata: labeldataArr} })
         },
         selectCity2(children, id, k){
+            
+            console.log('children, id, k', children, id, JSON.stringify(k))
             let maxListData = this.state.listDatabrandpage
             let { timer, maxrOW } = idIsFn2(`${k.name}`, this.state.listDatabrandpage)
             let OBJECT = maxListData[maxrOW].UcarMakeItemList[timer]
@@ -312,9 +358,11 @@
                 json.Name = k.Name
                 json.Country = k.Country
                 json.Image = k.Image
+                json.title = '品牌'
+                json.type = 'mbid'
                 this.home1 = json
                 this.state.homeCarModelData.name1 = json
-                this.setLableFn('品牌', k.ID, k.Name, 'mbid')
+                // this.setLableFn('品牌', k.ID, k.Name, 'mbid')
                 this.cityList = k.UcarModelList
             }
         },
@@ -336,7 +384,7 @@
                 json.Image = D.Image
                 this.home2 = json
                 this.state.homeCarModelData.name2 = json
-                this.setLableFn('品牌2', D.ID, D.Name, 'brandid')
+                this.setLableFn('品牌2', D.ID, D.Name, 'brandid', '10')
                 this.dispatch({ type: 'set', data: { currentIndex: 1} })
                 this.dispatch({ type: 'set', data: {citySelectTop: 2} })
                 this.dispatch({ type: 'set', data: {moreShow: 0, PageIndex: 1} })
@@ -374,7 +422,7 @@
                     }
                 } else {
                     prompt.showToast({
-                        message: '网络异常',
+                        message: '网络繁忙',
                         duration: 0
                     })
                 }
@@ -594,10 +642,17 @@
     }
     const fn = {
         componentWillReceiveDataPatch: (component, dataPatch, state) => {
+            console.log('labeldata-------', JSON.stringify(dataPatch.state.labeldata))
             component.UcarModelList = dataPatch.state.UcarModelList,
             component.carModelData = dataPatch.state.carModelData
             component.homeCarModelData = dataPatch.state.homeCarModelData
             component.labeldata = dataPatch.state.labeldata
+            let json = {}
+            for(var i = 0; i < dataPatch.state.labeldata.length; i++) {
+                json[dataPatch.state.labeldata[i].data.selectName] = 1 
+            }
+            component.stringLabeldata = JSON.parse(JSON.stringify(json))
+            component.stringLabeldata2 = JSON.stringify(dataPatch.state.labeldata)
             component.currentIndex = dataPatch.state.currentIndex
             component.currnetData = dataPatch.state.currnetData
             component.currentRowlistdata = dataPatch.state.currentRowlistdata
@@ -634,14 +689,14 @@
         animation-name: loading;
         animation-timing-function: linear;
         animation-duration: 300ms;
-        animation-iteration-count: infinite;
+        /* animation-iteration-count: infinite; */
     }
     .style0{
         flex-shrink: 0;
         width: 190px;
         flex-shrink: 0;
         flex-basis: 130px;
-        justify-content: flex-start;
+        /* justify-content: flex-start; */
         align-items: center;
     }
     .style0 image{
@@ -688,7 +743,7 @@
     }
     .list_box text{
         font-size: 30px;
-        color: #001414;
+        /* color: #001414; */
     }
     .demo-page-right {
         
@@ -733,7 +788,7 @@
     }
     .opacity0Hide{
         animation-name: opacity0Hide;
-        animation-delay:.5ms;
+        animation-delay: 0.5ms;
         animation-duration: 1000ms;
         animation-fill-mode: forwards ; /*  去了不要回来 */
         animation-iteration-count: 1;
@@ -823,34 +878,34 @@
     }
     @keyframes transformShow750 {
         from {
-            transform: translate(750px 0);
+            transform: translateX(750px);
         }
         to {
-            transform: translate(0px 0px);
+            transform: translateX(0px);
         }
     }
     @keyframes transformShow {
         from {
-            transform: translate(540px 0);
+            transform: translateX(540px);
         }
         to {
-            transform: translate(0px 0px);
+            transform: translateX(0px);
         }
     }
     @keyframes transformHide750 {
         from {
-            transform: translate(0 0);
+            transform: translateX(0);
         }
         to {
-            transform: translate(840px 0px);
+            transform: translateX(840px);
         }
     }
     @keyframes transformHide {
         from {
-            transform: translate(0 0);
+            transform: translateX(0);
         }
         to {
-            transform: translate(840px 0px);
+            transform: translateX(840px);
         }
     }
     /*  */

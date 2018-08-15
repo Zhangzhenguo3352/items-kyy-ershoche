@@ -1,5 +1,5 @@
 
-<import name="header" src="../header"></import>
+<import name="header" src="../header/index"></import>
 <import name="textModel" src="../textModel"></import>
 <!-- <import name="drawer" src="../drawer"></import> -->
 <template>
@@ -11,7 +11,7 @@
 
             <textModel textmodel="{{textmodel}}" if="{{showModel}}"></textModel>
             <stack style="height: 100%;padding-top:100px;width: 100%;">
-                <list id="list" style="flex-direction:column;columns: 1;" @scroll="scrollEvent" class="list">
+                <list id="list" style="flex-direction:column;" @scroll="scrollEvent" class="list">
                     <block for="item in year">
                         <list-item type="{{$idx}}" style="flex-direction:column;" ondisappear="showMask(item.letter, $idx, 'b')" onappear="hideMask(item.letter, $idx, 'b')">
                             <!-- #  部分 -->
@@ -36,8 +36,8 @@
         <!-- 抽屉组件 -->
         <div if="{{drawerShow}}">
             <stack>
-                <div class="demo-page-right opacity05Show" style="column:1; " @click="hideClick(false)"></div>
-                <list id="listDrawer" type="listDrawer" class="demo-page-right2 transform transformShow" @scroll="scrollEvent2">
+                <div class="demo-page-right opacity05Show"  @click="hideClick(false)"></div>
+                <list id="listDrawer"  class="demo-page-right2 transform transformShow" @scroll="scrollEvent2">
                     <block for="item in month">
                         <list-item  type="{{$idx}}" >
                             <div class="list_box" @click="clickRightCity(item)"><text>{{item}}月</text></div>
@@ -103,9 +103,11 @@
         },
 
         onShow(){
-            console.log('cityType', JSON.stringify(this.cityType))
+            $umeng_stat.resume(this) //在onShow方法的第一行加入此代码
         },
-        
+        onHide() {
+            $umeng_stat.pause(this);//在onHide方法的第一行加入此代码
+        },
         // 点击 抽屉里的 右侧城市
         clickRightCity(month) {
             this.state.timeData.year = this.timeData_year
@@ -221,7 +223,7 @@
                     }
                 } else {
                     prompt.showToast({
-                        message: '网络异常',
+                        message: '网络繁忙',
                         duration: 0
                     })
                     router.back()
@@ -379,18 +381,18 @@
 
     @keyframes transformShow {
         from {
-            transform: translate(540px 0);
+            transform: translateX(540px);
         }
         to {
-            transform: translate(0px 0px);
+            transform: translateX(0px);
         }
     }
     @keyframes transformHide {
         from {
-            transform: translate(0 0);
+            transform: translateX(0);
         }
         to {
-            transform: translate(840px 0px);
+            transform: translateX(840px);
         }
     }
     /*  */
