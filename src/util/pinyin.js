@@ -14,7 +14,6 @@ export function CC2PY(l1) {
   var reg = new RegExp('[a-zA-Z0-9\- ]')
 
   for (var i = 0; i < l2; i++) {
-    console.log('l1',l1)
     var val = l1.substr(i, 1)
 
     var name = arraySearch(val, PinYin)

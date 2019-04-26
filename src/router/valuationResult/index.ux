@@ -1,11 +1,11 @@
-<import name="header" src="../component/header"></import>
+<import name="header" src="../component/header/index"></import>
 <!-- 估价结果 -->
 <template>
     <!-- template里只能有一个根节点 -->
     <div class="me">
         <header title="估价结果页" menu="menu" titleshow="{{true}}" prop1="{{false}}" show="{{true}}">
             <div class="style0"  @click="backFn">
-                <image src="../../static/icon/back.png" alt="" />
+                <image src="/Common/icon/back.png" alt="" />
             </div>
         </header>
         <div class="resultBox">
@@ -19,7 +19,7 @@
                 </stack>
             </stack>
             <div class="infoBox">
-                <text lines="1" text-overflow="ellipsis" class="carType">{{data.SerialName}} {{data.ProductName}}</text>
+                <text class="carType" style="lines:1;text-overflow:ellipsis">{{data.SerialName}} {{data.ProductName}}</text>
             </div>
             <div class="infoBox carDate">
                 <text class="carDateL">{{data.LicenceDate}} 上牌 </text>
@@ -46,10 +46,14 @@
             router.back()
         },
         onShow() {
+            APP_STATISTICS.page_show( this );//在onShow方法的第一行加入此代码
+            $umeng_stat.resume(this) //在onShow方法的第一行加入此代码
             this.data = JSON.parse(this.json)
         },
-        onInit() {
-            // console.log("init===========", this.json)
+        onHide() {
+            APP_STATISTICS.page_hide( this ); //在onHide方法的第一行加入此代码
+            $umeng_stat.pause(this);//在onHide方法的第一行加入此代码
+            //App业务代码
         }
     }
 
@@ -86,23 +90,24 @@
         flex-direction: column;
         height:534px;
         width: 100%;
-        background: linear-gradient(#FF9A00,#FF8A00);
+        background: linear-gradient(#e50113,#ff2b3a);
         margin-top: 100px;
     }
+    
     .circleBox{
         width: 180px;
         height: 180px;
         border-width: 8px;
-        border-color: #FFAA33;
+        border-color: #ef757f;
         border-style: solid;
-        background-color: #FF8700;
+        background-color: #FFE0E0;
         border-radius: 90px;
         flex-direction: column;
         align-items: center;
         justify-content: center;
     }
     .leftBox text,.rightBox text{
-        color: #fff;
+        color: #F50013;
         font-size: 26px;
     }
     .leftBox{
@@ -124,7 +129,7 @@
         flex: 0;
     }
     .centerBox text{
-        color: #FF8900;
+        color: #F50013;
     }
     .centerTop{
         font-size: 32px;
@@ -139,7 +144,7 @@
         margin-top: 75px;
         border-bottom-width: 1px;
         border-style: solid;
-        border-bottom-color: #FF8C00;
+        border-bottom-color: #F50013;
     }
     .centerBt{
         font-size: 26px;
@@ -154,7 +159,7 @@
         width: 100%;
         height: 40px;
         text-align: center;
-        color: #fff;
+        color: #ffffff;
         font-size: 28px;
         margin-top:20px;
     }
@@ -162,7 +167,7 @@
         justify-content: center;
     }
     .infoBox text{
-        color: #fff;
+        color: #ffffff;
     }
     .carDate{
         height: 37px;
@@ -174,7 +179,7 @@
     }
     .carDateL{
         border-right-width: 1px;
-        border-right-color: #fff;
+        border-right-color: #ffffff;
         border-style: solid;
         margin-right: 10px;
         padding-right: 10px;
@@ -184,7 +189,7 @@
         padding-top: 15px;
         padding-left: 30.5px;
         border-top-width: 2px;
-        border-top-color: #FFB866;
+        border-top-color: #F50013;
         border-style: solid;
     }
     .sellOther text{

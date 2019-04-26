@@ -48,16 +48,22 @@
             list: [{}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}]
         },
         onInit() {
+            APP_STATISTICS.page_hide( this ); //在onHide方法的第一行加入此代码
         },
         hideClick() {
             this.drawerShow = false
             this.$emit('evtType2', { params: '额外参数' })
         },
         onShow(){
+            APP_STATISTICS.page_show( this );//在onShow方法的第一行加入此代码
             setTimeout(()=> {
                 this.loadingShow = false;
             },5000)
-        }
+        },
+        onHide() {
+            APP_STATISTICS.page_hide( this ); //在onHide方法的第一行加入此代码
+            //...业务代码
+        } 
     }
 </script>
 

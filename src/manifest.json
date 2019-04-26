@@ -1,33 +1,71 @@
 {
   "package": "com.ucarQyy.app",
   "name": "淘车二手车",
-  "versionName": "1.1.1",
-  "versionCode": "4",
-  "minPlatformVersion": "101",
+  "versionName": "1.4.6",
+  "versionCode": 56,
+  "minPlatformVersion": 1010,
   "icon": "/Common/logo.png",
   "features": [
-    { "name": "system.prompt" },
-    { "name": "system.router" },
-    { "name": "system.shortcut" },
-    {"name": "system.webview"},
-    {"name": "system.fetch" },
-    {"name": "system.geolocation"},
-    {"name": "system.storage"},
-    {"name": "system.shortcut"},
-    {"name": "system.device"},
-    {"name": "system.network"}
+    {
+      "name": "system.prompt"
+    },
+    {
+      "name": "system.router"
+    },
+    {
+      "name": "system.shortcut"
+    },
+    {
+      "name": "system.webview"
+    },
+    {
+      "name": "system.fetch"
+    },
+    {
+      "name": "system.geolocation"
+    },
+    {
+      "name": "system.storage"
+    },
+    {
+      "name": "system.device"
+    },
+    {
+      "name": "system.network"
+    },
+    {
+      "name": "system.app"
+    },
+    {"name": "service.account"}
   ],
   "permissions": [
-    { "origin": "*" }
+    {
+      "origin": "*"
+    }
   ],
   "config": {
     "logLevel": "off",
-    "designWidth": 750
+    "designWidth": 750,
+    "data":{
+      "umeng_appkey" : "5b6be8308f4a9d0bee000027"
+    }
   },
   "router": {
     "entry": "router/page",
     "pages": {
       "router/page": {
+        "component": "index"
+      },
+      "router/page/home": {
+        "component": "index"
+      },
+      "router/page/buyCar": {
+        "component": "index"
+      },
+      "router/page/sellingCar": {
+        "component": "index"
+      },
+      "router/page/valuation": {
         "component": "index"
       },
       "router/component/slider": {
@@ -48,7 +86,30 @@
       "router/valuationResult": {
         "component": "index"
       }
+    },
+    "widgets": {
+      "Card": {
+        "name": "淘车二手车",
+        "decription": "淘车二手车",
+        "component": "index",
+        "path": "/Card",
+        "features": [
+          {
+            "name": "system.geolocation"
+          },
+          {
+            "name": "system.fetch"
+          },
+          {
+            "name": "system.router"
+          },
+          {
+            "name": "system.network"
+          }
+        ]
+      }
     }
+    
   },
   "display": {
     "titleBarBackgroundColor": "#414141",
@@ -59,6 +120,22 @@
         "menu": false,
         "titleBar": false
       },
+      "router/page/home": {
+        "menu": false,
+        "titleBar": false
+      },
+      "router/page/buyCar": {
+        "menu": false,
+        "titleBar": false
+      },
+      "router/page/sellingCar": {
+        "menu": false,
+        "titleBar": false
+      },
+      "router/page/valuation": {
+        "menu": false,
+        "titleBar": false
+      },
       "router/component/slider": {
         "menu": false,
         "titleBar": false
@@ -83,6 +160,6 @@
         "menu": false,
         "titleBar": false
       }
-    }
+      }
   }
 }

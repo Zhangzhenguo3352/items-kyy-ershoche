@@ -13,10 +13,12 @@ const state = {
   UcarModelList: [], // 第二层的数据
   moreShow: 3,  // 3 什么也没有
   listDatabrandpage: [{}],
+  getCityIdData: [],
   listDataCarSource: [],
   showRecommend: false,
   locationstate: 'currentCity',
   show: true,
+  JW: {},
   carModelData: {
     name1: {},
     name2: {},
@@ -56,7 +58,13 @@ const state = {
   citySelectIndex: -1,
   isIndex1: true,
   phoneInfo:{},
-  isNOData: false
+  isNOData: false,
+  subscriptNumber: 0,
+  drawershow: false,
+  carPriceModelshow: false,
+  fetchDeviceInfoData: {},
+  isBtnClick: false,
+  submitGo: false,
 }
 
 export default {

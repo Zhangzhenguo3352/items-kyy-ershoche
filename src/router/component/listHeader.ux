@@ -73,10 +73,13 @@
         ],
 
         onInit() {
-            console.log('mo init',)
         },
         onShow() {
-            console.log('mo show',)
+            APP_STATISTICS.page_show( this );//在onShow方法的第一行加入此代码
         },
+        onHide() {
+            APP_STATISTICS.page_hide( this ); //在onHide方法的第一行加入此代码
+            //...业务代码
+        } 
     }
 </script>

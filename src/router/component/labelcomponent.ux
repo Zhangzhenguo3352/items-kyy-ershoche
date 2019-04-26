@@ -1,0 +1,58 @@
+<!-- 公用的 Mash model 控件 -->
+<template>
+    <div class="{{labelShow ? '' : 'none'}}" style="">
+        <div class="box" @click="labelClick">
+            <text>{{title}}</text>
+            <image src="/Common/icon/1111.png" alt=""></image>
+        </div>
+    </div>
+</template>
+
+<style>
+    .box{
+        padding-left: 13px;
+        padding-right: 13px;
+        height: 50px;
+        border-radius: 6px;
+        background-color: #ffffff;
+        align-items: center;
+        margin-bottom: 20px;
+        margin-right: 34px;
+    }
+    .box text{
+        font-size: 26px;
+        color: #818D9A;
+    }
+    .box image{
+        width: 22px;
+        height: 22px;
+        margin-left: 21px;   
+    }
+    .none{
+        display: none;
+    }
+</style>
+
+<script>
+    export default {
+        props: [
+            'title'
+        ],
+        data: {
+            labelShow: true
+        },
+        onInit() {
+        },
+        onShow() {
+            APP_STATISTICS.page_show( this );//在onShow方法的第一行加入此代码
+        },
+        labelClick() {
+            this.labelShow = false
+            this.$dispatch('labelClick', this.labelClick)
+        },
+        onHide() {
+            APP_STATISTICS.page_hide( this ); //在onHide方法的第一行加入此代码
+            //...业务代码
+        } 
+    }
+</script>

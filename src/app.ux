@@ -5,7 +5,9 @@
   import util from './util'
   import { connectApp } from 'quickapp-redux'
   import { createStore } from 'redux'
+  import './umenganalysis.es.min';
   import stateData from './type.js'
+  import "./appStatistics.min.js"
   // Just a reducer example for creating store
   const store = createStore(function reducer (state = stateData.state, action){
     // switch (action.type) {
@@ -36,6 +38,11 @@
   export default connectApp(store, {
     /**manifest**/
     showMenu: util.showMenu,
-    createShortcut: util.createShortcut
+    createShortcut: util.createShortcut,
+    onCreate(){
+      //统计打点
+      APP_STATISTICS.app_sta_init( this );
+      $umeng_stat.init(this);   //在onCreate函数中加入该行代码，必须添加！！！
+    }
   })
 </script>

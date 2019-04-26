@@ -47,7 +47,7 @@ function createShortcut () {
             prompt.showToast({ message: '成功创建桌面图标' })
           },
           fail: function (errmsg, errcode) {
-            prompt.showToast({ message: 'error: ' + errcode + '---' + errmsg })
+            // prompt.showToast({ message: '用户拒绝创建图标' })
           }
         })
       }

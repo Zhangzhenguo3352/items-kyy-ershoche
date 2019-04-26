@@ -86,10 +86,11 @@
         .tabBtnActive{
             height: 70px;
             width: 210px;
-            border: 1px solid #FF6D02;
+            border: 1px solid #F50013;
             border-radius: 5px;
             justify-content: center;
             align-items: center;
+            
         }
         .wrapStyle .div{
             border: 1px solid #818D9A;
@@ -119,7 +120,7 @@
             padding-right: 10px;
         }
         .wrapStyle .btn{
-            background-color: #D6D6D6;
+            background-color: #cccccc;
             border-radius: 5px;
             font-size: 26px;
             color: #000000;
@@ -128,8 +129,11 @@
             justify-content: center;
             align-items: center;
         }
+        .listBox .div{
+            border: 1px solid #DDDDDD;
+        }
         .wrapStyle .btnSubmit{
-            background-color: #FF6D02;
+            background-color: #F50013;
             border-radius: 5px;
     
             height: 70px;
@@ -166,7 +170,7 @@
         }
         .textleft text{
             font-size: 24px;
-            color: #818D9A;
+            color: #777777;
         }
         .listBox{
             justify-content: space-between;
@@ -175,14 +179,14 @@
         }
     
         .select {
-            color: #FF6D02;
+            color: #F50013;
             height: 110px;
             font-size: 26px;
         }
         .normal {
             height: 110px;
             font-size: 26px;
-            color: #2F3540;
+            color: #111111;
         }
         .listHeader_box{
             background-color: #ffffff;
@@ -210,11 +214,11 @@
         }
         @keyframes opacity05Show {
             from {
-                transform: translate(0, -40px);
+                transform: translateY(-40px);
                 opacity: 0.2;
             }
             to {
-                transform: translate(0, 0px);
+                transform: translateY(0px);
                 opacity: 1;
             }
         }
@@ -230,174 +234,166 @@
     
     </style>
     
-    <script>
-        import router from '@system.router';
-        import prompt from '@system.prompt'
-        import {
-            connect
-        } from 'quickapp-redux'
-        const carPriceModel = {
-            props: [
-                'rowlistdata',
-                'drawershow',
-                'selectlistindex',
-    
-            ],
-            data: {
-                // input1: '',
-                // input2: '',
-                submitGo: false,
-                selectName: '不限',
-                input1value: '',
-                input2value: ''
-            },
-            //input1 失去焦点
-            input1Focus() {
-                this.$element('input1').focus({
-                    focus: false
-                });
-            },
-            //input2 失去焦点
-            input2Focus() {
-                this.$element('input2').focus({
-                    focus: false
-                });
-            },
-    
-            //
-            submitFn(selectedPrice, selectName, type) {
-                this.input1Focus()
-                this.input2Focus()
-                this.$dispatch('carPriceModelFn', {
-                    startPrice: this.input1value.replace(/\b(0+)/gi,""),
-                    endPrice: this.input2value.replace(/\b(0+)/gi,""),
-                    selectedPrice, // 0 代表 不限
-                    selectName,
-                    type
-                })
-            },
-            tabListClick(index, item){
-                // this.selectlistindex = index;
-                // this.selectName = item.title
-                console.log('item.title',item.title)
-                this.submitFn(index, item.title, 'tab')
-            },
-            maskClick() {
-                this.$dispatch('carPriceModelClear', {index: 3})
-            },
-    
-            //提交
-            btnSubmitClick() {
-                console.log('this.selectlistindex',this.selectlistindex, this.selectName)
-                this.submitFn(this.selectlistindex, this.selectName, 'btn')
-            },
-    
-            //input 是 空 換成 0
-            inputF(value) {
-                if(value == '') {
-                    return 0
-                }
-                return value
-            },
-            focus() {
-                console.log('focus')
-            },
-    
-            input1Set(v) {
-                this.input1value = v
-                this.$dispatch('inputFn', {
-                    input1value: v,
-                    input2value: this.input2value
-                })
-            },
-    
-            input2Set(v) {
-                this.input2value = v
-                this.$dispatch('inputFn', {
-                    input1value: this.input1value,
-                    input2value: v
-                })
-            },
-                // input  事件
-            inpuChange(e, k) {
-                if(e == 'input1value') {
-                    if (k.value&&k.value!="null") {
-                        var isFloat = k.value.indexOf('.')
-                        if (isFloat != -1) {
-                            var val = k.value
-                            if (val.length>4) {
-                                this.input1value = Number(val.slice(0,2) + '.' + val.slice(2,4))
-                            } else {
-                                this.input1Set(k.value)
-                            }
-                        }else {
-                            if (k.value.length>4) {
-                                this.input1value = Number(k.value.slice(0,4))
-                            } else {
-                                this.input1Set(k.value)
-                            }
-                        }
-    
-                    } else {
-                        this.input1Set(k.value)
-                    }
-                } else {
-                    if (k.value&&k.value!="null") {
-                        var isFloat = k.value.indexOf('.')
-                        if (isFloat != -1) {
-                            var val = k.value
-                            if (val.length>4) {
-                                this.input2value = Number(val.slice(0,2) + '.' + val.slice(2,4))
-                            } else {
-                                this.input2Set(k.value)
-                            }
-                        }else {
-                            if (k.value.length>4) {
-                                this.input2value = Number(k.value.slice(0,4))
-                            } else {
-                                this.input2Set(k.value)
-                            }
-                        }
-    
-                    } else {
-                        this.input2Set(k.value)
-                    }
-    
-    
-                }
-                // this[e] = k.value
-                if(this.input1value != '' || this.input2value != '' ) {
-                    if(Number(this.inputF(this.input1value)) < Number(this.inputF(this.input2value))) {
-                        this.submitGo = true
-                    } else if(this.input2value == '') {
-                        this.submitGo = true
-                    } else if(Number(this.inputF(this.input1value)) == Number(this.inputF(this.input2value))){
-                        this.submitGo = true
-                    } else {
-                        this.submitGo = false
-                    }
-                } else {
-                    this.submitGo = false
-                }
-            },
+<script>
+    import router from '@system.router';
+    import prompt from '@system.prompt'
+    import { connect } from 'quickapp-redux'
+    const carPriceModel = {
+    props: [
+        'rowlistdata',
+        'drawershow',
+        'selectlistindex',
+    ],
+    data: {
+        // input1: '',
+        // input2: '',
+        submitGo: false,
+        selectName: '不限',
+        input1value: '',
+        input2value: '',
+        isBtnClick: false
+    },
+    //input1 失去焦点
+    input1Focus() {
+        this.$element('input1').focus({
+            focus: false
+        });
+    },
+    //input2 失去焦点
+    input2Focus() {
+        this.$element('input2').focus({
+            focus: false
+        });
+    },
+    //
+    submitFn(selectedPrice, selectName, type) {
+        this.input1Focus()
+        this.input2Focus()
+        this.$dispatch('carPriceModelFn', {
+            startPrice: this.input1value.replace(/\b(0+)/gi,""),
+            endPrice: this.input2value.replace(/\b(0+)/gi,""),
+            selectedPrice, // 0 代表 不限
+            selectName,
+            type
+        })
+        // this.$dispatch('carPriceModelClear', {index: 3})
+    },
+    tabListClick(index, item){
+        // this.selectlistindex = index;
+        // this.selectName = item.title
+        this.submitFn(index, item.title, 'tab')
+    },
+    maskClick() {
+        this.$dispatch('carPriceModelClear', {index: 3})
+        // if(this.submitGo && !this.isBtnClick) { // 没有点击 按钮 就应该 清空
+        //     this.dispatch({ type: 'set', data: { input1value: "", input2value: "" } })
+        // }
+        // // this.$dispatch('showBuyCarTop', {  })
+        // this.$dispatch('showBuyCarTopMask', { isBtnClick: true })
+    },
+    //提交
+    btnSubmitClick() {
+        this.submitFn(this.selectlistindex, this.selectName, 'btn')
+        // this.$dispatch('carPriceModelFn', { isBtnClick: true })
+    },
+    //input 是 空 換成 0
+    inputF(value) {
+        if(value == '') {
+            return 0
         }
-        function mapStateToData(state) {
-            return {  
-                state
+        return value
+    },
+    focus() {
+    },
+    input1Set(v) {
+        this.input1value = v
+        this.$dispatch('inputFn', {
+            input1value: v,
+            input2value: this.input2value
+        })
+    },
+    input2Set(v) {
+        this.input2value = v
+        this.$dispatch('inputFn', {
+            input1value: this.input1value,
+            input2value: v
+        })
+    },
+    // input 事件
+    inpuChange(e, k) {
+    if(e == 'input1value') {
+        if (k.value&&k.value!="null") {
+            var isFloat = k.value.indexOf('.')
+            if (isFloat != -1) {
+                var val = k.value
+                if (val.length>4) {
+                this.input1value = Number(val.slice(0,2) + '.' + val.slice(2,4))
+                } else {
+                this.input1Set(k.value)
+                }
+            }else {
+                if (k.value.length>4) {
+                    this.input1value = Number(k.value.slice(0,4))
+                } else {
+                    this.input1Set(k.value)
+                }
+            }
+        } else {
+            this.input1Set(k.value)
+        }
+        } else {
+            if (k.value&&k.value!="null") {
+                var isFloat = k.value.indexOf('.')
+            if (isFloat != -1) {
+                var val = k.value
+                if (val.length>4) {
+                    this.input2value = Number(val.slice(0,2) + '.' + val.slice(2,4))
+                } else {
+                    this.input2Set(k.value)
+                }
+            }else {
+                if (k.value.length>4) {
+                    this.input2value = Number(k.value.slice(0,4))
+                } else {
+                    this.input2Set(k.value)
+                }
+            }
+            } else {
+                this.input2Set(k.value)
             }
         }
-    
-        const fn = {
-            componentWillReceiveDataPatch: (component, dataPatch, state) => {
-                component.input1value = dataPatch.state.input1value
-                component.input2value = dataPatch.state.input2value
+        // this[e] = k.value
+        if(this.input1value != '' || this.input2value != '' ) {
+            if(Number(this.inputF(this.input1value)) < Number(this.inputF(this.input2value))) {
+                this.dispatch({ type: 'set', data: { submitGo: true } })
+            } else if(this.input2value == '') {
+                this.dispatch({ type: 'set', data: { submitGo: true } })
+            } else if(Number(this.inputF(this.input1value)) == Number(this.inputF(this.input2value))){
+                this.dispatch({ type: 'set', data: { submitGo: true } })
+            } else {
+                this.dispatch({ type: 'set', data: { submitGo: false } })
             }
+        } else {
+            this.dispatch({ type: 'set', data: { submitGo: false } })
         }
-    
-        export default connect(
-            // mapStateToProps
-            mapStateToData,
-            fn
-        )(carPriceModel)
-    </script>
-    
+    },
+    }
+    function mapStateToData(state) {
+        return {
+            state
+        }
+    }
+    const fn = {
+        componentWillReceiveDataPatch: (component, dataPatch, state) => {
+            component.input1value = dataPatch.state.input1value
+            component.input2value = dataPatch.state.input2value
+            component.isBtnClick = dataPatch.state.isBtnClick
+            component.submitGo = dataPatch.state.submitGo
+        }
+    }
+    export default connect(
+        // mapStateToProps
+        mapStateToData,
+        fn
+    )(carPriceModel)
+</script>

@@ -1,0 +1,490 @@
+<template>
+
+  <!-- template里只能有一个根节点 -->
+  <div class="demo-page">
+    <div class="content ">
+      <div class="header-content">
+        <div class="item" for="btns">
+          <stack>
+            <image src="{{$item.icon}}" class="titleImg" @click="handleClick($item,$idx)"></image>
+            <div @click="handleClick($item,$idx)" class="img-active"></div>
+          </stack>
+        </div>
+      </div>
+      <div class="text-dev">
+        <div class="item" for="btns" @click="handleClick($item,$idx)">
+          <text @click="handleClick($item,$idx)">{{$item.name}}</text>
+        </div>
+      </div>
+    </div>
+    
+    <!-- <div class="item" >
+      <text>a => {{a}}</text>
+    </div>
+    <div class="item" >
+      <text>-----------------------------</text>
+    </div>
+    <div class="item" >
+      <text>g => {{g}}</text>
+    </div>
+    <div class="item" >
+      <text>-----------------------------</text>
+    </div>
+    <div class="item" >
+      <text>b => {{b}}</text>
+    </div>
+    <div class="item" >
+      <text>-----------------------------</text>
+    </div>
+    <div class="item" >
+      <text>c => {{c}}</text>
+    </div>
+    <div class="item" >
+      <text>-----------------------------</text>
+    </div> -->
+
+    
+    <div class="content-footer h1" if="{{listData.length}}">
+      <div class="hr"></div>
+      <div>
+          <div class="itemfooter" for="listData">
+            <stack>
+              <image @click="listClick($item,$idx)" src="{{$item.ImageURL}}" class="footer-img"></image>
+              <div @click="listClick($item,$idx)" class="footer-img-active"></div>
+            </stack>
+          </div>
+      </div>
+      <div class="text-dev-footer">
+        <div class="item " for="listData" @click="listClick($item,$idx)">
+          <div class="w1">
+            <text>{{$item.CarName}}</text>
+          </div>
+        </div>
+      </div>
+      <div class="text-dev-footer-02 ">
+        <div class="item02" for="listData" @click="listClick($item,$idx)">
+          <div class="w1 ">
+              <text class="span01">{{$item.DisPlayPrice}}</text><text class="span02">万</text>
+          </div>
+        </div>
+      </div>
+      <div class="text-dev-footer-03">
+        <div @click="handleLookClick">
+          <text class="span01" @click="handleLookClick">查看全部车源</text>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script>
+  import router from '@system.router';
+  import fetch from '@system.fetch'
+  import geolocation from '@system.geolocation'
+  import cityD from './cityData.js'
+
+  export default {
+    private: {
+      a: 1,
+      b:1,
+      c: 1,
+      e: 1,
+      f: 1,
+      g: 1,
+      city: '',
+      JW: {},
+      nnn: 0,
+      minute: 1800,
+      timer: null,
+      timer0: null,
+      noData: false,
+      timer02: null,
+      urlLoad: '',
+      setIsUpdateData: 0,
+      lodeTime: 1800000,
+      btns: [
+        {
+          icon: 'http://img6.taoche.cn/apptc2/escsc.png',
+          name: '二手车商城',
+          uri: 'hap://app/com.ucarQyy.app/router/page?vivo_card_id=allCarsource'
+        },
+        {
+          icon: 'http://img6.taoche.cn/apptc2/clgj.png',
+          name: '车辆估价',
+          uri: 'hap://app/com.ucarQyy.app/router/page?vivo_card_id=valuationPage',
+        },
+        {
+          icon: 'http://img6.taoche.cn/apptc2/gjmc.png',
+          name: '高价卖车',
+          uri: 'hap://app/com.ucarQyy.app/router/page?vivo_card_id=sellingCarPage'
+        }
+      ],
+      listData: [],
+      active: true,
+      activeId: -1
+    },
+    handleClick(item, index) {
+
+      let obj = {
+        uri: item['uri']
+      }
+      if (item['params']) {
+        obj['params'] = item['params']
+      }
+      router.push(obj);
+
+
+    },
+    handleTouch(flag, index) {
+      this.activeId = index;
+      this.active = flag;
+      if (!flag) {
+        this.activeId = -1;
+      }
+    },
+    handleLookClick() {
+      router.push({
+        uri: 'hap://app/com.ucarQyy.app/router/page?vivo_card_id=allCarsource'
+      })
+    },
+    onHide() {
+      // APP_STATISTICS.page_hide( this ); //在onHide方法的第一行加入此代码
+      this.activeId = -1;
+      clearInterval(this.timer02)
+      clearInterval(this.timer0)
+      this.timer0 = null;
+      this.timer02 = null;
+    },
+    onShow() {
+      // APP_STATISTICS.page_show( this );//在onShow方法的第一行加入此代码
+      // this.c++;
+      let _this = this;
+      clearInterval(this.timer02)
+      timerInitGetData();
+      
+      function timerInitGetData() {
+        if(_this.listData == 0) {
+          _this.showData();
+        }
+      }
+      this.timer0 = setInterval(timerInitGetData, 1000)
+      this.setIsUpdateData = (this.time + this.lodeTime) 
+      this.timer02 = setInterval(() => {
+        let currentTime = new Date().getTime();
+        // this.a = this.setIsUpdateData - currentTime;
+        // this.b = this.setIsUpdateData
+        if(this.setIsUpdateData < currentTime) {
+          this.time = new Date().getTime();
+          this.setIsUpdateData = new Date().getTime() + this.lodeTime
+          this.getList();
+        } 
+      },1000)
+      
+    },
+    showData() {
+      geolocation.getLocation({
+        success: (data) => {
+          this.fn(data);
+          this.JW = data;
+          // this.fn({latitude: '36.883116', longitude: '116.361819'});
+          // this.JW = {latitude: '36.883116', longitude: '116.361819'};
+          // this.a = `success${JSON.stringify(data)}`
+        },
+        fail: (data, code) => {
+          this.fn({latitude: '39.883116', longitude: '116.361819'});
+          this.JW = {latitude: '39.883116', longitude: '116.361819'};
+          // this.a = `error${code}`
+        }
+      })
+    },
+    idIsFn3(city, obj, province) {
+      let cityId, cityName;
+      for(var i = 0; i< obj.length; i++) {
+        if(city == obj[i].name) {
+          cityId = obj[i].id
+          cityName = obj[i].name
+        } else {
+          for(var j = 0; j < obj.length; j++) {
+            if(province == obj[j].name) {
+              cityId = obj[j].id
+              cityName = province
+            }
+          }
+        }
+      }
+      // this.e = JSON.stringify({cityId, cityName})
+      if(cityId == undefined) {
+        return {cityId: 0, cityName: '全国'} 
+      } else {
+        return {cityId, cityName}
+      }
+    },
+    fn(data) {
+      let _this = this;
+      
+      //  百度地图定位
+      let baiduUrl = `http://api.map.baidu.com/geocoder/v2/?callback=renderReverse&location=${data.latitude},${data.longitude}&output=json&pois=1&ak=mmuSzjRMnc9NAibnGigY3wHdY2SEf3n7`
+      fetch.fetch({
+        url: baiduUrl,
+        method: 'GET',
+        success: baidu_res => {
+          let obj = eval(baidu_res.data)
+          
+          function renderReverse(baiduData) {
+            // _this.b = JSON.stringify(baiduData)
+            let obj = baiduData.result.addressComponent
+            let name = obj.city;
+            let province = obj.province
+            let cityName = name.replace('市', '').replace('省', '')
+            let provinceName = province.replace('市', '').replace('省', '')
+            
+            if(baiduData.status == 0) {
+              let json = _this.idIsFn3(cityName, cityD, provinceName)
+              let key = {
+                  2: 201,
+                  26: 2601,
+                  24: 2401,
+                  31: 3101
+              }
+              if(key[json.cityId]) {
+                  json.cityId = key[json.cityId]
+                  _this.city = json
+              } else {
+                  _this.city = json
+              }
+              // _this.c = JSON.stringify(_this.city) + 'cityName' + cityName + 'province'+province+ 'provinceName'+ provinceName
+              _this.getList();
+            }
+          }
+        },
+        fail: (data, code) => {
+          // this.b = `baidu error${data}`
+        }
+      })
+    },
+    //Math.random()
+    randomFn(min, max) {
+      var x = max - min;
+      var r = Math.random();
+      var num = min + Math.floor(r * x);
+      return num;
+    },
+    getList() {
+      let { cityId } = this.city
+      let arrUrl = ['&lp=3&hp=5', '&lp=5&hp=8', '&lp=8&hp=10', '&lp=10&hp=15', '&lp=15&hp=20'];
+      this.urlLoad = arrUrl[this.randomFn(0, 5)]
+      let url = `https://quickappapi.taoche.com/get?v=7.2.0&imei=&referrer=1&action=getcarlist&cid=${this.noData ? 0 : cityId }&entry=taocheapp&pindex=1&orderid=0&ordertype=0${this.urlLoad}`;
+      
+      fetch.fetch({
+        url,
+        method: 'GET',
+        success: listDataRes => {
+          // this.f = `LIST SUCCESS ${JSON.stringify(JSON.parse(listDataRes.data))}`
+          if(listDataRes.code == 200) {
+            let json = JSON.parse(listDataRes.data);
+            if(json.data.Items.length === 0) {
+              this.noData = true  // 没有数据
+            } else {
+              let arr = json.data.Items.filter((item, index) => {
+                if(index <= 2) return item;
+              });
+              this.listData = arr
+            }
+          }
+        },
+        fail: (data, code) => {
+          // this.f = `LIST ERROR ${JSON.stringify(JSON.parse(listDataRes.data))}`
+          // this.b = `baidu error${data}`
+        }
+      })
+    },
+    listClick(item, index) {
+      let { longitude, latitude } = this.JW;
+      router.push({
+          uri: 'hap://app/com.ucarQyy.app/router/link_view',
+          params: {
+              // lng 经度 l，    lat 维度 
+              // longitude 经度，latitude 纬度
+              urlName: `http://cooper.m.taoche.com/kuaiyingyong/buycar/carinfo2017.aspx?ucarid=${item.UcarID}&manufacturer=vivo_vard&lng=${longitude}&lat=${latitude}`,
+          }
+      })
+    },
+    onInit() {
+      this.time = new Date().getTime();
+      this.setIsUpdateData = new Date().getTime()+1800000
+    }
+  }
+</script>
+
+<style>
+  .c1{
+    background-color: aquamarine;
+  }
+  .c2{
+    background-color: #3399ff;
+    
+  }
+  .h1{
+    padding-bottom: 13px;
+  }
+  .titleImg{
+    height: 90px;
+    width: 90px;
+  }
+  .header-content{
+    height: 90px;
+    /* background-color: #3f9; */
+    margin-top:16px;
+  }
+  .demo-page {
+    /* height: 550px; */
+    padding-top: 17px;
+    padding-bottom: 17px;
+    padding-left: 22px;
+    padding-right: 22px;
+    background-color: theme.backgroundColor;
+    border-bottom-left-radius: theme.borderBottomRadius;
+    border-bottom-right-radius: theme.borderBottomRadius;
+    flex-direction: column;
+    
+  }
+  .content-footer{
+    /* background-color: red; */
+    /* height: 353px; */
+    flex-direction: column;
+  }
+  .hr{
+    opacity:0.2;
+    height: 1px;
+    width: 100%;
+    background-color: #000000;
+    margin-top:5px;
+  }
+  .content-footer .itemfooter{
+    flex: 1;
+    justify-content: center;
+    margin-top: 35px;
+    border-radius: 12px;
+  }
+
+  .content-footer .itemfooter image{
+    width:194px;
+    height: 140px;
+    border-radius: 12px;
+  }
+  .content {
+    width: 100%;
+    height: 178px;
+
+    flex-direction: column;
+  }
+  .content .text-dev text{
+    font-size: 24px;
+    color: #000000;
+  }
+
+  .item {
+    justify-content: center;
+    flex: 1;
+  }
+
+  .content .item stack {
+    width: 90px;
+    height: 90px;
+    border-radius: 12px;
+  }
+
+  .img-active {
+    width: 100%;
+    /* height: 100%; */
+    opacity: 0;
+    border-radius: 18px;
+  }
+  .img-active:active {
+    opacity: 1;
+    background-color: theme.activeColor;
+    /* background-color: rgba(0, 0, 0, 0.5); */
+  }
+  .text-dev-footer{
+    /* justify-content: center; */
+    margin-top: 10px;
+  }
+  .text-dev-footer .item{
+    justify-content: center;
+    /* flex: 1; */
+    /* justify-content: center; */
+    /* font-size: 20px; */
+    
+  }
+  .text-dev-footer .w1{
+    align-items: flex-start;
+  }
+  .w1{width:194px;}
+  .text-dev-footer .item text{
+    font-size: 20px;
+    color: #000000;
+  }
+  .text-dev-footer-02{
+    
+    margin-top: 4px;
+  }
+  .text-dev-footer-02 .item02{
+    flex:1;
+    justify-content: center;
+  }
+  .text-dev-footer-02 .item02 text{
+    /* flex: 1;
+    justify-content: left;
+    text-align: left; */
+    text-align: left;
+  }
+  .text-dev-footer-02 .item02 .span01{
+    font-size: 32px;
+    color: #FF432C;
+  }
+  .text-dev-footer-02 .item02 .span02{
+    font-size: 20px;
+    color: #FF432C;
+    margin-top:6px;
+  }
+  .text-dev-footer-03 {
+    justify-content: center;
+    margin-top: 40px;
+  }
+  .text-dev-footer-03 text{
+    color: #00A963;
+    font-size: 28px;
+  }
+  .text-dev{
+    /* justify-content: center; */
+    margin-top: 10px;
+  }
+  .text-dev .item{
+    flex: 1;
+    /* justify-content: center; */
+    font-size: 24px;
+    color: #000000;
+  }
+  /* .header-content .item{
+    justify-content: center;
+  } */
+
+
+
+  /* .item stack {
+    width: 84px;
+    height: 84px;
+  } */
+
+  .img-active {
+    width: 100%; 
+    height: 100%;
+    opacity: 0;
+    border-radius: 18px;
+  }
+  .img-active:active {
+    opacity: 1;
+    background-color: theme.activeColor;
+  }
+</style>
+

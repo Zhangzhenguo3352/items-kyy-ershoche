@@ -69,6 +69,7 @@ export const provinces = [
         'name': '贵州',
         'children': 1
       }
+      
     ],
   },
   {
@@ -80,6 +81,7 @@ export const provinces = [
         'name': '海南',
         'children': 1
       },
+      
       {
         'id': 9,
         'name': '河北',
@@ -101,6 +103,29 @@ export const provinces = [
         'name': '湖南',
         'children': 1
       }
+    ],
+  },
+  {
+    'letter': 'J',
+    'children': 1, 
+    'C' : [
+      {
+        'id': 14,
+        'name': '吉林',
+        'children': 1
+      },
+      {
+        'id': 15,
+        'name': '江苏',
+        'children': 1
+      },
+      {
+        'id': 16,
+        'name': '江西',
+        'children': 1
+      },
+      
+      
     ],
   },
   {

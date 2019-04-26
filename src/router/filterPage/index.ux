@@ -1,14 +1,14 @@
 <!-- 筛选展开 -->
 <import name="loading"  src="../../Template/loading"></import>
-<import name="header" src="../../router/component/header"></import>
+<import name="header" src="../../router/component/header/index"></import>
 <template>
     <div class="demo-page flex1" >
         <header title="{{title}}" titleshow="{{titleshow}}" prop1="{{true}}" show="{{true}}">
             <div class="div style0"   @click="backFn" >
-                <image src="../../static/icon/back.png" alt="" />
+                <image src="/Common/icon/back.png" alt="" />
             </div>
         </header>
-        <list id="list" style="flex-direction:column;columns: 1;padding-bottom: 100px;padding-top:90px">
+        <list id="list" style="flex-direction:column;padding-bottom: 100px;padding-top:100px">
             <block for="(i,item) in dataList" >
                 <list-item type="{{i}}" style="" if="{{item.title == '级别'}}">
                     <div style="flex-direction: column;width: 100%;">
@@ -17,10 +17,10 @@
                                     <text>{{item.title}}</text>
                                 </div>
                                 <div class="wrapStyle footer" style="padding-bottom: 30px; ">
-                                    <div  style="column:3;width: 33.3%;justify-content: flex-start" @click="tabListClick(index, item, i)" type="{{index}}" for="{{(index,item) in item.data}}" class="{{(index == 2|| index == 5 || index == 8) ? 'sn':'sn3'}} {{(index == 1|| index == 7|| index == 4 || index == 10) ? 'sncenter':''}}" >
+                                    <div  style="width: 33.3%;justify-content: flex-start" @click="tabListClick(index, item, i)"  for="{{(index,item) in item.data}}" class="{{(index == 2|| index == 5 || index == 8) ? 'sn':'sn3'}} {{(index == 1|| index == 7|| index == 4 || index == 10) ? 'sncenter':''}}" >
                                         <div class="{{(filterdata[i] == index) ? 'tabBtnActive1':'tabBtn1'}}" style="width: 210px;margin-left: 22px;">
-                                            <image src="../../static/icon-car/active/{{index}}.png" alt="" show="{{(filterdata[i] == index)}}" class="carImage1"/>
-                                            <image src="../../static/icon-car/{{index}}.png" alt="" show="{{(filterdata[i] != index)}}"  class="carImage1"//>
+                                            <image src="/Common/icon-car/active/{{index}}.png" alt="" show="{{(filterdata[i] == index)}}" class="carImage1"/>
+                                            <image src="/Common/icon-car/{{index}}.png" alt="" show="{{(filterdata[i] != index)}}"  class="carImage1"/>
                                             <text class="{{(filterdata[i] == index) ? 'select1':'normal1'}}">{{item.title}}</text>
                                         </div>
                                     </div>
@@ -36,7 +36,7 @@
                                         <text>{{item.title}}</text>
                                     </div>
                                     <div class="wrapStyle footer" style="padding-bottom: 30px; ">
-                                        <div  style="column:3;width: 33.3%;justify-content: flex-start" @click="tabListClick2(index, b, i)" type="{{index}}" for="{{(index,b) in item.data}}" class="{{(index == 2|| index == 5 || index == 8) ? 'sn':'sn3'}} {{(index == 1|| index == 7|| index == 4 || index == 10) ? 'sncenter':''}}" >
+                                        <div  style="width: 33.3%;justify-content: flex-start" @click="tabListClick2(index, b, i)"  for="{{(index,b) in item.data}}" class="{{(index == 2|| index == 5 || index == 8) ? 'sn':'sn3'}} {{(index == 1|| index == 7|| index == 4 || index == 10) ? 'sncenter':''}}" >
                                             <div class="{{(filterdata[0][index] != -1) ? 'tabBtnActive':'tabBtn'}}" style="width: 210px;margin-left: 22px;">
                                                 <text class="{{(filterdata[0][index] != -1) ? 'select':'normal'}}">{{b.title}}</text>
                                             </div>
@@ -48,7 +48,7 @@
                                         <text>{{item.title}}</text>
                                     </div>
                                     <div class="wrapStyle footer" style="padding-bottom: 30px; ">
-                                        <div  style="column:3;width: 33.3%;justify-content: flex-start" @click="tabListClick_a(index, b, i)" type="{{index}}" for="{{(index,b) in item.data}}" class="{{(index == 2|| index == 5 || index == 8) ? 'sn':'sn3'}} {{(index == 1|| index == 7|| index == 4 || index == 10) ? 'sncenter':''}}" >
+                                        <div  style="width: 33.3%;justify-content: flex-start" @click="tabListClick_a(index, b, i)"  for="{{(index,b) in item.data}}" class="{{(index == 2|| index == 5 || index == 8) ? 'sn':'sn3'}} {{(index == 1|| index == 7|| index == 4 || index == 10) ? 'sncenter':''}}" >
                                             <div class="{{(filterdata[i] == index) ? 'tabBtnActive':'tabBtn'}}" style="width: 210px;margin-left: 22px;">
                                                 <text class="{{(filterdata[i] == index) ? 'select':'normal'}}">{{b.title}}</text>
                                             </div>
@@ -75,7 +75,7 @@
     }
     .filterBox .title text{
         font-size: 26px;
-        color: #818D9A;
+        color: #777777;
     }
     .footer{
         width: 100%;
@@ -105,7 +105,7 @@
     }
     .tabBtnActive{
         height: 70px;
-        border: 1px solid #FF6D02;
+        border: 1px solid #F50013;
         border-radius: 5px;
         justify-content: center;
         align-items: center;
@@ -144,14 +144,14 @@
         display: none;
     }
     .select {
-        color: #FF6D02;
+        color: #F50013;
         height: 110px;
         font-size: 26px;
     }
     .normal {
         height: 110px;
         font-size: 26px;
-        color: #2F3540;
+        color: #111111;
     }
     .opacity05Show{
         animation-name: opacity05Show;
@@ -167,11 +167,11 @@
     }
     @keyframes opacity05Show {
         from {
-            transform: translate(0, -40px);
+            transform: translateY(-40px);
             opacity: 0.2;
         }
         to {
-            transform: translate(0, 0px);
+            transform: translateY(0px);
             opacity: 1;
         }
     }
@@ -221,7 +221,7 @@
         display: none;
     }
     .select1 {
-        color: #FF6D02;
+        color: #F50013;
         font-size: 26px;
         padding-top: 20px;
     }
@@ -258,10 +258,10 @@
     }
     .footerFilterBox .left text{
         font-size: 32px;
-        color: #394043;
+        color: #111111;
     }
     .footerFilterBox .right{
-        background-color: #FF6402;
+        background-color: #F50013;
     }
     .footerFilterBox .rightfalse{
         background-color: #cccccc;
@@ -301,7 +301,6 @@
     .slef{
         flex-direction: column;
         height: 100%;
-        column: 1;
     }
     web{
         flex:1;
@@ -496,7 +495,6 @@
                 filterArr = this.state.labeldata.filter(item => item.title !== '淘车认证')
                 url = `${inItdata.http}?v=${inItdata.v}&imei=&cid=${cityId}&action=getcarcount${utlSpliceFn(filterArr)}`
             }
-            console.log('filter url', url, JSON.stringify( filterArr))
             ajaxFn(fetch, url, {}).then((res) => {
                 this.dispatch({ type: 'set', data: {isrefresh: false} })
                 if(res.code == '200') {
@@ -511,7 +509,7 @@
                     }
                 } else {
                     prompt.showToast({
-                        message: '网络异常',
+                        message: '网络繁忙',
                         duration: 0
                     })
                 }
@@ -681,8 +679,16 @@
             });
         },
         onShow(){
+            
+            APP_STATISTICS.page_show( this );//在onShow方法的第一行加入此代码
+            $umeng_stat.resume(this) //在onShow方法的第一行加入此代码
             this.filterDataStorge = JSON.parse(JSON.stringify(this.state.filterdata));
             this.submitShow( this.spliceUrlParamFn() )
+        },
+        onHide() {
+            APP_STATISTICS.page_hide( this ); //在onHide方法的第一行加入此代码
+            $umeng_stat.pause(this);//在onHide方法的第一行加入此代码
+            //App业务代码
         },
         // 返回
         backFn(e) {
@@ -718,7 +724,6 @@
         },
         // 获取 头部数据 中 要取的数据在第几项
         setHeaderDataIndex(labelD) {
-            console.log('a1111111', JSON.stringify(labelD))
             let headerArr = this.state.headerArr
             this.dispatch({ type: 'set', data: {headerArr: []} })
 

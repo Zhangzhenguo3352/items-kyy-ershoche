@@ -70,7 +70,7 @@ export const defaultCarData = [
 // home 车型数据
 export const defaultHome = [
   {
-    url: '../../static/checing/1car.png',
+    url: '/Common/checing/1car.png',
     title: '品牌',
     name: '大众',
     type: 'mbid',
@@ -78,7 +78,7 @@ export const defaultHome = [
     header: 2
   },
   {
-    url: '../../static/checing/2car.png',
+    url: '/Common/checing/2car.png',
     title: '品牌',
     name: '丰田',
     type: 'mbid',
@@ -86,7 +86,7 @@ export const defaultHome = [
     header: 2
   },
   {
-    url: '../../static/checing/3car.png',
+    url: '/Common/checing/3car.png',
     title: '品牌',
     name: '奥迪',
     type: 'mbid',
@@ -94,7 +94,7 @@ export const defaultHome = [
     header: 2
   },
   {
-    url: '../../static/checing/4car.png',
+    url: '/Common/checing/4car.png',
     title: '品牌',
     name: '宝马',
     type: 'mbid',
@@ -102,7 +102,7 @@ export const defaultHome = [
     header: 2
   },
   {
-    url: '../../static/checing/5car.png',
+    url: '/Common/checing/5car.png',
     title: '品牌',
     name: '本田',
     type: 'mbid',
@@ -110,7 +110,7 @@ export const defaultHome = [
     header: 2
   },
   {
-    url: '../../static/checing/6car.png',
+    url: '/Common/checing/6car.png',
     title: '品牌',
     name: '奔驰',
     type: 'mbid',
@@ -118,7 +118,7 @@ export const defaultHome = [
     header: 2
   },
   {
-    url: '../../static/checing/7car.png',
+    url: '/Common/checing/7car.png',
     title: '品牌',
     name: '别克',
     type: 'mbid',
@@ -126,7 +126,7 @@ export const defaultHome = [
     header: 2
   },
   {
-    url: '../../static/checing/8car.png',
+    url: '/Common/checing/8car.png',
     title: '品牌',
     name: '日产',
     type: 'mbid',
@@ -134,7 +134,7 @@ export const defaultHome = [
     header: 2
   },
   {
-    url: '../../static/checing/9car.png',
+    url: '/Common/checing/9car.png',
     title: '品牌',
     name: '现代',
     type: 'mbid',
@@ -142,7 +142,7 @@ export const defaultHome = [
     header: 2
   },
   {
-    url: '../../static/checing/10car.png',
+    url: '/Common/checing/10car.png',
     title: '品牌',
     name: '福特',
     type: 'mbid',
@@ -150,7 +150,7 @@ export const defaultHome = [
     header: 2
   },
   {
-    url: '../../static/checing/11car.png',
+    url: '/Common/checing/11car.png',
     title: '品牌',
     name: '雪佛兰',
     type: 'mbid',
@@ -201,6 +201,7 @@ export const carFilterData = [
     name: 'SUV',
     type: 'carlevelid',
     params: 8,
+    num: 3,
     ID: 26,
     header: 4,
     arr: [[-1, -1, -1, -1, -1, -1], -1, -1, 7, -1, -1, -1],
@@ -400,6 +401,7 @@ export const objData = {
       params: '',
       ID: 2,
       header: 4,
+      num: 1,
       arr: [[-1, -1, -1, -1, -1, -1], 3, -1, -1, -1, -1, -1],
     }
   ],
@@ -423,6 +425,7 @@ export const suvData = {
   type: 'carlevelid',
   params: 8,
   ID: 26,
+  num:3,
   header: 4,
   arr: [[-1, -1, -1, -1, -1, -1], -1, -1, 7, -1, -1, -1],
 }

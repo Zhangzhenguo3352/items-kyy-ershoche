@@ -117,11 +117,11 @@
     }
     @keyframes opacity05Show {
         from {
-            transform: translate(0, -40px);
+            transform: translateY(-40px);
             opacity: 0.2;
         }
         to {
-            transform: translate(0, 0px);
+            transform: translateY(0px);
             opacity: 1;
         }
     }
@@ -153,7 +153,6 @@
             submitGo: false
         },
         tabListClick(index){
-            console.log('index')
             this.selectListIndex = index;
             // this.$on('webviewChange', this.webviewChange)
             // this.$emit('webviewChange', { params: '额外参数' })
